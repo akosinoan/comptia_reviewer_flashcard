@@ -319,7 +319,10 @@ export default function AcronymsPage() {
     setCollapsed((prev) => ({ ...prev, [key]: !prev[key] }));
 
   const toggleRow = (key) =>
-    setHiddenRows((prev) => ({ ...prev, [key]: !prev[key] }));
+    setHiddenRows((prev) => ({
+      ...prev,
+      [key]: !(prev[key] !== undefined ? prev[key] : hideAllDefs),
+    }));
 
   const isDefHidden = (key) =>
     hiddenRows[key] !== undefined ? hiddenRows[key] : hideAllDefs;
