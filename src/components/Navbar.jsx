@@ -23,6 +23,12 @@ export default function Navbar({ theme, onToggle }) {
           >
             Port Matching
           </Link>
+          <Link
+            to="/acronyms"
+            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hidden sm:block"
+          >
+            Acronyms
+          </Link>
           <ThemeToggle theme={theme} onToggle={onToggle} />
         </div>
       </div>

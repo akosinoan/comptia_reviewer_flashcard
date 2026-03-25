@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar";
 import LandingPage from "./pages/LandingPage";
 import StudyPage from "./pages/StudyPage";
 import PortMatchingPage from "./pages/PortMatchingPage";
+import AcronymsPage from "./pages/AcronymsPage";
 
 export default function App() {
   const [theme, setTheme] = useState(() => {
@@ -35,6 +36,7 @@ export default function App() {
             <Route path="/" element={<LandingPage />} />
             <Route path="/study" element={<StudyPage />} />
             <Route path="/ports" element={<PortMatchingPage />} />
+            <Route path="/acronyms" element={<AcronymsPage />} />
           </Routes>
         </main>
       </div>
