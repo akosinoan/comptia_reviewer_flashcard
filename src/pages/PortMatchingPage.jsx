@@ -4,23 +4,126 @@ import { Progress } from "@/components/ui/progress";
 import { RotateCcw, CheckCircle2, Shuffle, ArrowUpDown } from "lucide-react";
 
 const ALL_PORTS = [
-  { id: 1,  port: "20",   protocol: "TCP",     name: "FTP (Data)" },
-  { id: 2,  port: "21",   protocol: "TCP",     name: "FTP (Control)" },
-  { id: 3,  port: "22",   protocol: "TCP",     name: "SSH" },
-  { id: 4,  port: "23",   protocol: "TCP",     name: "Telnet" },
-  { id: 5,  port: "25",   protocol: "TCP",     name: "SMTP" },
-  { id: 6,  port: "53",   protocol: "UDP/TCP", name: "DNS" },
-  { id: 7,  port: "67",   protocol: "UDP",     name: "DHCP (Server)" },
-  { id: 8,  port: "68",   protocol: "UDP",     name: "DHCP (Client)" },
-  { id: 9,  port: "80",   protocol: "TCP",     name: "HTTP" },
-  { id: 10, port: "110",  protocol: "TCP",     name: "POP3" },
-  { id: 11, port: "143",  protocol: "TCP",     name: "IMAP4" },
-  { id: 12, port: "389",  protocol: "TCP",     name: "LDAP" },
-  { id: 13, port: "443",  protocol: "TCP",     name: "HTTPS" },
-  { id: 14, port: "445",  protocol: "TCP",     name: "SMB" },
-  { id: 15, port: "993",  protocol: "TCP",     name: "IMAP4 (Secure)" },
-  { id: 16, port: "995",  protocol: "TCP",     name: "POP3 (Secure)" },
-  { id: 17, port: "3389", protocol: "TCP",     name: "RDP" },
+  {
+    id: 1,
+    port: "20",
+    protocol: "TCP",
+    name: "FTP (Data)",
+    fullName: "File Transfer Protocol",
+  },
+  {
+    id: 2,
+    port: "21",
+    protocol: "TCP",
+    name: "FTP (Control)",
+    fullName: "File Transfer Protocol",
+  },
+  { id: 3, port: "22", protocol: "TCP", name: "SSH", fullName: "Secure Shell" },
+  {
+    id: 4,
+    port: "23",
+    protocol: "TCP",
+    name: "Telnet",
+    fullName: "Teletype Network",
+  },
+  {
+    id: 5,
+    port: "25",
+    protocol: "TCP",
+    name: "SMTP",
+    fullName: "Simple Mail Transfer Protocol",
+  },
+  {
+    id: 6,
+    port: "53",
+    protocol: "UDP/TCP",
+    name: "DNS",
+    fullName: "Domain Name System",
+  },
+  {
+    id: 7,
+    port: "67",
+    protocol: "UDP",
+    name: "DHCP (Server)",
+    fullName: "Dynamic Host Configuration Protocol",
+  },
+  {
+    id: 8,
+    port: "68",
+    protocol: "UDP",
+    name: "DHCP (Client)",
+    fullName: "Dynamic Host Configuration Protocol",
+  },
+  {
+    id: 9,
+    port: "80",
+    protocol: "TCP",
+    name: "HTTP",
+    fullName: "Hypertext Transfer Protocol",
+  },
+  {
+    id: 10,
+    port: "110",
+    protocol: "TCP",
+    name: "POP3",
+    fullName: "Post Office Protocol v3",
+  },
+  {
+    id: 11,
+    port: "143",
+    protocol: "TCP",
+    name: "IMAP4",
+    fullName: "Internet Message Access Protocol v4",
+  },
+  {
+    id: 12,
+    port: "389",
+    protocol: "TCP",
+    name: "LDAP",
+    fullName: "Lightweight Directory Access Protocol",
+  },
+  {
+    id: 13,
+    port: "443",
+    protocol: "TCP",
+    name: "HTTPS",
+    fullName: "Hypertext Transfer Protocol Secure",
+  },
+  {
+    id: 14,
+    port: "445",
+    protocol: "TCP",
+    name: "SMB",
+    fullName: "Server Message Block",
+  },
+  {
+    id: 18,
+    port: "587",
+    protocol: "TCP",
+    name: "SMTP (Secure)",
+    fullName: "Simple Mail Transfer Protocol",
+  },
+  {
+    id: 15,
+    port: "993",
+    protocol: "TCP",
+    name: "IMAP4 (Secure)",
+    fullName: "Internet Message Access Protocol v4",
+  },
+  {
+    id: 16,
+    port: "995",
+    protocol: "TCP",
+    name: "POP3 (Secure)",
+    fullName: "Post Office Protocol v3",
+  },
+  {
+    id: 17,
+    port: "3389",
+    protocol: "TCP",
+    name: "RDP",
+    fullName: "Remote Desktop Protocol",
+  },
 ];
 
 function shuffle(arr) {
@@ -42,7 +145,8 @@ export default function PortMatchingPage() {
 
   const matchedCount = Object.keys(matched).length;
   const allMatched = matchedCount === ALL_PORTS.length;
-  const accuracy = attempts > 0 ? Math.round((matchedCount / attempts) * 100) : null;
+  const accuracy =
+    attempts > 0 ? Math.round((matchedCount / attempts) * 100) : null;
 
   const handleReset = () => {
     setShuffledPorts([...ALL_PORTS]);
@@ -98,7 +202,12 @@ export default function PortMatchingPage() {
             <span className="text-muted-foreground">Accuracy: {accuracy}%</span>
           )}
         </div>
-        <Button variant="ghost" size="sm" onClick={handleReset} className="gap-1.5">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleReset}
+          className="gap-1.5"
+        >
           <RotateCcw className="h-4 w-4" /> Reset
         </Button>
       </div>
@@ -112,9 +221,15 @@ export default function PortMatchingPage() {
       {allMatched && (
         <div className="mb-6 p-4 rounded-lg bg-green-500/10 border border-green-500/30 text-center">
           <p className="text-green-600 dark:text-green-400 font-semibold">
-            All matched! {matchedCount}/{attempts} attempts ({accuracy}% accuracy)
+            All matched! {matchedCount}/{attempts} attempts ({accuracy}%
+            accuracy)
           </p>
-          <Button variant="outline" size="sm" className="mt-3" onClick={handleReset}>
+          <Button
+            variant="outline"
+            size="sm"
+            className="mt-3"
+            onClick={handleReset}
+          >
             Play Again
           </Button>
         </div>
@@ -123,7 +238,8 @@ export default function PortMatchingPage() {
       {/* Instructions */}
       {!selectedPortId && matchedCount === 0 && (
         <p className="text-xs text-muted-foreground mb-4">
-          Click a port number on the left, then click the matching service on the right.
+          Click a port number on the left, then click the matching service on
+          the right.
         </p>
       )}
 
@@ -167,10 +283,10 @@ export default function PortMatchingPage() {
                   isMatched
                     ? "bg-green-500/10 border-green-500/40 text-green-600 dark:text-green-400 cursor-default"
                     : isWrong
-                    ? "bg-red-500/10 border-red-500/50 text-red-600 dark:text-red-400"
-                    : isSelected
-                    ? "bg-primary/10 border-primary text-primary"
-                    : "bg-background border-border hover:bg-accent cursor-pointer"
+                      ? "bg-red-500/10 border-red-500/50 text-red-600 dark:text-red-400"
+                      : isSelected
+                        ? "bg-primary/10 border-primary text-primary"
+                        : "bg-background border-border hover:bg-accent cursor-pointer"
                 }`}
               >
                 {isMatched ? (
@@ -201,7 +317,7 @@ export default function PortMatchingPage() {
               <Shuffle className="h-3 w-3" /> Shuffle
             </Button>
           </div>
-          {shuffledNames.map(({ id, protocol, name }) => {
+          {shuffledNames.map(({ id, protocol, name, fullName }) => {
             const isMatched = matched[id];
             const isWrong = wrong?.nameId === id;
             return (
@@ -213,10 +329,10 @@ export default function PortMatchingPage() {
                   isMatched
                     ? "bg-green-500/10 border-green-500/40 text-green-600 dark:text-green-400 cursor-default"
                     : isWrong
-                    ? "bg-red-500/10 border-red-500/50 text-red-600 dark:text-red-400"
-                    : selectedPortId
-                    ? "bg-background border-border hover:bg-accent cursor-pointer"
-                    : "bg-background border-border text-muted-foreground cursor-default"
+                      ? "bg-red-500/10 border-red-500/50 text-red-600 dark:text-red-400"
+                      : selectedPortId
+                        ? "bg-background border-border hover:bg-accent cursor-pointer"
+                        : "bg-background border-border text-muted-foreground cursor-default"
                 }`}
               >
                 {isMatched ? (
@@ -224,13 +340,25 @@ export default function PortMatchingPage() {
                     <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-green-600 dark:text-green-400" />
                     <span>
                       <span className="font-medium">{name}</span>
-                      <span className="ml-1.5 text-xs opacity-70">({protocol})</span>
+                      <span className="ml-1.5 text-xs opacity-70">
+                        ({protocol})
+                      </span>
+                      <span className="block text-xs opacity-60">
+                        {fullName}
+                      </span>
                     </span>
                   </span>
                 ) : (
-                  <span>
-                    <span className="font-medium">{name}</span>
-                    <span className="ml-1.5 text-xs text-muted-foreground">({protocol})</span>
+                  <span className="flex items-center justify-between gap-2">
+                    <span>
+                      <span className="font-medium">{name}</span>
+                      <span className="ml-1.5 text-xs text-muted-foreground">
+                        ({protocol})
+                      </span>
+                    </span>
+                    <span className="text-xs text-muted-foreground/60 text-right shrink-0">
+                      {fullName}
+                    </span>
                   </span>
                 )}
               </button>
