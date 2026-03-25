@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>CompTIA Core 1</title>
+    <script>
+      // GitHub Pages SPA redirect trick
+      // Encodes the current path into a query param and redirects to index.html
+      var base = '/comptia_reviewer_flashcard';
+      var path = window.location.pathname.replace(base, '') || '/';
+      var search = window.location.search;
+      var hash = window.location.hash;
+      window.location.replace(
+        base + '/?p=' + encodeURIComponent(path + search + hash)
+      );
+    </script>
+  </head>
+  <body></body>
+</html>
