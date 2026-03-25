@@ -8,7 +8,9 @@ export default function App() {
   const [theme, setTheme] = useState(() => {
     const stored = localStorage.getItem("theme");
     if (stored) return stored;
-    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    return window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
   });
 
   useEffect(() => {
@@ -24,7 +26,7 @@ export default function App() {
   const toggleTheme = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
 
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <div className="min-h-screen bg-background text-foreground">
         <Navbar theme={theme} onToggle={toggleTheme} />
         <main>
