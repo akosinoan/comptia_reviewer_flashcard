@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import LandingPage from "./pages/LandingPage";
 import StudyPage from "./pages/StudyPage";
+import PortMatchingPage from "./pages/PortMatchingPage";
 
 export default function App() {
   const [theme, setTheme] = useState(() => {
@@ -33,6 +34,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/study" element={<StudyPage />} />
+            <Route path="/ports" element={<PortMatchingPage />} />
           </Routes>
         </main>
       </div>

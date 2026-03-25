@@ -17,6 +17,12 @@ export default function Navbar({ theme, onToggle }) {
           >
             Study
           </Link>
+          <Link
+            to="/ports"
+            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hidden sm:block"
+          >
+            Port Matching
+          </Link>
           <ThemeToggle theme={theme} onToggle={onToggle} />
         </div>
       </div>
