@@ -5,6 +5,9 @@ import LandingPage from "./pages/LandingPage";
 import StudyPage from "./pages/StudyPage";
 import PortMatchingPage from "./pages/PortMatchingPage";
 import AcronymsPage from "./pages/AcronymsPage";
+import RAIDPage from "./pages/RAIDPage";
+import PBQPage from "./pages/PBQPage";
+import PCBuilderPage from "./pages/PCBuilderPage";
 
 export default function App() {
   const [theme, setTheme] = useState(() => {
@@ -37,6 +40,9 @@ export default function App() {
             <Route path="/study" element={<StudyPage />} />
             <Route path="/ports" element={<PortMatchingPage />} />
             <Route path="/acronyms" element={<AcronymsPage />} />
+            <Route path="/raid" element={<RAIDPage />} />
+            <Route path="/pbq" element={<PBQPage />} />
+            <Route path="/pcbuilder" element={<PCBuilderPage />} />
           </Routes>
         </main>
       </div>

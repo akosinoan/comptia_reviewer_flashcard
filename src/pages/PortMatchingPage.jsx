@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { RotateCcw, CheckCircle2, Shuffle, ArrowUpDown } from "lucide-react";
+import { RotateCcw, CheckCircle2, Shuffle, ArrowUpDown, PenLine } from "lucide-react";
 
 const ALL_PORTS = [
   {
@@ -142,6 +142,9 @@ export default function PortMatchingPage() {
   const [matched, setMatched] = useState({});
   const [wrong, setWrong] = useState(null);
   const [attempts, setAttempts] = useState(0);
+  const [quizMode, setQuizMode] = useState(false);
+  const [quizAnswers, setQuizAnswers] = useState({});
+  const [quizOrder, setQuizOrder] = useState(() => [...ALL_PORTS]);
 
   const matchedCount = Object.keys(matched).length;
   const allMatched = matchedCount === ALL_PORTS.length;
@@ -202,14 +205,25 @@ export default function PortMatchingPage() {
             <span className="text-muted-foreground">Accuracy: {accuracy}%</span>
           )}
         </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleReset}
-          className="gap-1.5"
-        >
-          <RotateCcw className="h-4 w-4" /> Reset
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant={quizMode ? "default" : "outline"}
+            size="sm"
+            onClick={() => { setQuizMode((v) => !v); setQuizAnswers({}); setQuizOrder([...ALL_PORTS]); }}
+            className="gap-1.5"
+          >
+            <PenLine className="h-4 w-4" />
+            {quizMode ? "Exit Quiz" : "Quiz Mode"}
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleReset}
+            className="gap-1.5"
+          >
+            <RotateCcw className="h-4 w-4" /> Reset
+          </Button>
+        </div>
       </div>
 
       <Progress
@@ -236,136 +250,167 @@ export default function PortMatchingPage() {
       )}
 
       {/* Instructions */}
-      {!selectedPortId && matchedCount === 0 && (
+      {!quizMode && !selectedPortId && matchedCount === 0 && (
         <p className="text-xs text-muted-foreground mb-4">
           Click a port number on the left, then click the matching service on
           the right.
         </p>
       )}
 
-      {/* Two-column matching grid */}
-      <div className="grid grid-cols-2 gap-3">
-        {/* Left: Port Numbers */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-              Port Number
-            </p>
-            <div className="flex gap-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShuffledPorts([...ALL_PORTS])}
-                className="h-6 px-2 gap-1 text-xs"
-              >
-                <ArrowUpDown className="h-3 w-3" /> Sort
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShuffledPorts(shuffle(shuffledPorts))}
-                className="h-6 px-2 gap-1 text-xs"
-              >
-                <Shuffle className="h-3 w-3" /> Shuffle
-              </Button>
-            </div>
-          </div>
-          {shuffledPorts.map(({ id, port }) => {
-            const isMatched = matched[id];
-            const isSelected = selectedPortId === id;
-            const isWrong = wrong?.portId === id;
-            return (
-              <button
-                key={id}
-                onClick={() => handlePortClick(id)}
-                disabled={isMatched}
-                className={`w-full text-left px-4 py-2.5 rounded-lg border text-sm font-mono font-semibold transition-all ${
-                  isMatched
-                    ? "bg-green-500/10 border-green-500/40 text-green-600 dark:text-green-400 cursor-default"
-                    : isWrong
-                      ? "bg-red-500/10 border-red-500/50 text-red-600 dark:text-red-400"
-                      : isSelected
-                        ? "bg-primary/10 border-primary text-primary"
-                        : "bg-background border-border hover:bg-accent cursor-pointer"
-                }`}
-              >
-                {isMatched ? (
-                  <span className="flex items-center gap-2">
-                    <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
-                    {port}
-                  </span>
-                ) : (
-                  port
-                )}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Right: Service Names (shuffled) */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-              Protocol / Service
-            </p>
+      {/* Quiz mode */}
+      {quizMode && (
+        <div className="rounded-lg border overflow-hidden mb-4">
+          <div className="flex items-center justify-between px-4 py-2 bg-muted/40 border-b">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Quiz</p>
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setShuffledNames(shuffle(shuffledNames))}
+              onClick={() => { setQuizOrder(shuffle(quizOrder)); setQuizAnswers({}); }}
               className="h-6 px-2 gap-1 text-xs"
             >
               <Shuffle className="h-3 w-3" /> Shuffle
             </Button>
           </div>
-          {shuffledNames.map(({ id, protocol, name, fullName }) => {
-            const isMatched = matched[id];
-            const isWrong = wrong?.nameId === id;
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-muted/50 text-muted-foreground text-xs uppercase tracking-wide">
+                <th className="text-left px-4 py-2.5 font-semibold">Protocol / Service</th>
+                <th className="text-left px-4 py-2.5 font-semibold w-40">Port Number</th>
+              </tr>
+            </thead>
+            <tbody>
+              {quizOrder.map(({ id, name, protocol, fullName }, i) => {
+                const answer = quizAnswers[id] ?? "";
+                const isCorrect = answer.trim() === ALL_PORTS.find((p) => p.id === id).port;
+                return (
+                  <tr key={id} className={`border-t ${i % 2 === 0 ? "bg-background" : "bg-muted/10"}`}>
+                    <td className="px-4 py-2">
+                      <span className="font-medium">{name}</span>
+                      <span className="ml-1.5 text-xs text-muted-foreground">({protocol})</span>
+                      <span className="ml-1.5 text-xs text-muted-foreground/60">{fullName}</span>
+                    </td>
+                    <td className="px-3 py-1.5">
+                      <input
+                        type="text"
+                        value={answer}
+                        onChange={(e) =>
+                          setQuizAnswers((prev) => ({ ...prev, [id]: e.target.value }))
+                        }
+                        placeholder="Port…"
+                        className={`w-full px-3 py-1.5 rounded-md border text-sm font-mono focus:outline-none focus:ring-2 transition-colors ${
+                          isCorrect
+                            ? "bg-green-500/10 border-green-500/60 text-green-700 dark:text-green-400 focus:ring-green-500/30"
+                            : "bg-background border-border focus:ring-primary/30"
+                        }`}
+                      />
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Two-column matching grid */}
+      {!quizMode && (
+        <div className="space-y-2">
+          {/* Column headers */}
+          <div className="grid gap-3" style={{ gridTemplateColumns: "minmax(72px, 110px) 1fr" }}>
+            <div className="flex items-center gap-1">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mr-auto">
+                Port
+              </p>
+              <Button variant="ghost" size="sm" onClick={() => setShuffledPorts([...ALL_PORTS])} className="h-6 px-1.5">
+                <ArrowUpDown className="h-3 w-3" />
+              </Button>
+              <Button variant="ghost" size="sm" onClick={() => setShuffledPorts(shuffle(shuffledPorts))} className="h-6 px-1.5">
+                <Shuffle className="h-3 w-3" />
+              </Button>
+            </div>
+            <div className="flex items-center gap-1">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mr-auto">
+                Protocol / Service
+              </p>
+              <Button variant="ghost" size="sm" onClick={() => setShuffledNames(shuffle(shuffledNames))} className="h-6 px-1.5">
+                <Shuffle className="h-3 w-3" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Paired rows so heights always match */}
+          {shuffledPorts.map(({ id: portId, port }, i) => {
+            const nameItem     = shuffledNames[i];
+            const portMatched  = matched[portId];
+            const portSelected = selectedPortId === portId;
+            const portWrong    = wrong?.portId === portId;
+            const nameMatched  = nameItem && matched[nameItem.id];
+            const nameWrong    = nameItem && wrong?.nameId === nameItem.id;
+
             return (
-              <button
-                key={id}
-                onClick={() => handleNameClick(id)}
-                disabled={isMatched || !selectedPortId}
-                className={`w-full text-left px-4 py-2.5 rounded-lg border text-sm transition-all ${
-                  isMatched
-                    ? "bg-green-500/10 border-green-500/40 text-green-600 dark:text-green-400 cursor-default"
-                    : isWrong
-                      ? "bg-red-500/10 border-red-500/50 text-red-600 dark:text-red-400"
-                      : selectedPortId
-                        ? "bg-background border-border hover:bg-accent cursor-pointer"
-                        : "bg-background border-border text-muted-foreground cursor-default"
-                }`}
-              >
-                {isMatched ? (
-                  <span className="flex items-center gap-2">
-                    <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-green-600 dark:text-green-400" />
-                    <span>
-                      <span className="font-medium">{name}</span>
-                      <span className="ml-1.5 text-xs opacity-70">
-                        ({protocol})
-                      </span>
-                      <span className="block text-xs opacity-60">
-                        {fullName}
-                      </span>
+              <div key={portId} className="grid gap-3" style={{ gridTemplateColumns: "minmax(72px, 110px) 1fr" }}>
+                {/* Port button */}
+                <button
+                  onClick={() => handlePortClick(portId)}
+                  disabled={portMatched}
+                  className={`h-full w-full text-left px-2 py-2 rounded-lg border text-sm font-mono font-semibold transition-all ${
+                    portMatched
+                      ? "bg-green-500/10 border-green-500/40 text-green-600 dark:text-green-400 cursor-default"
+                      : portWrong
+                        ? "bg-red-500/10 border-red-500/50 text-red-600 dark:text-red-400"
+                        : portSelected
+                          ? "bg-primary/10 border-primary text-primary"
+                          : "bg-background border-border hover:bg-accent cursor-pointer"
+                  }`}
+                >
+                  {portMatched ? (
+                    <span className="flex items-center gap-1.5">
+                      <CheckCircle2 className="h-3 w-3 shrink-0" />
+                      {port}
                     </span>
-                  </span>
-                ) : (
-                  <span className="flex items-center justify-between gap-2">
-                    <span>
-                      <span className="font-medium">{name}</span>
-                      <span className="ml-1.5 text-xs text-muted-foreground">
-                        ({protocol})
+                  ) : (
+                    port
+                  )}
+                </button>
+
+                {/* Service button */}
+                {nameItem && (
+                  <button
+                    onClick={() => handleNameClick(nameItem.id)}
+                    disabled={nameMatched || !selectedPortId}
+                    className={`h-full w-full text-left px-3 py-2 rounded-lg border text-sm transition-all ${
+                      nameMatched
+                        ? "bg-green-500/10 border-green-500/40 text-green-600 dark:text-green-400 cursor-default"
+                        : nameWrong
+                          ? "bg-red-500/10 border-red-500/50 text-red-600 dark:text-red-400"
+                          : selectedPortId
+                            ? "bg-background border-border hover:bg-accent cursor-pointer"
+                            : "bg-background border-border text-muted-foreground cursor-default"
+                    }`}
+                  >
+                    {nameMatched ? (
+                      <span className="flex items-start gap-2">
+                        <CheckCircle2 className="h-3 w-3 shrink-0 mt-0.5 text-green-600 dark:text-green-400" />
+                        <span>
+                          <span className="font-medium">{nameItem.name}</span>
+                          <span className="ml-1 text-xs opacity-70">({nameItem.protocol})</span>
+                          <span className="block text-xs opacity-60">{nameItem.fullName}</span>
+                        </span>
                       </span>
-                    </span>
-                    <span className="text-xs text-muted-foreground/60 text-right shrink-0">
-                      {fullName}
-                    </span>
-                  </span>
+                    ) : (
+                      <>
+                        <span className="font-medium">{nameItem.name}</span>
+                        <span className="ml-1 text-xs text-muted-foreground">({nameItem.protocol})</span>
+                        <span className="block text-xs text-muted-foreground/60">{nameItem.fullName}</span>
+                      </>
+                    )}
+                  </button>
                 )}
-              </button>
+              </div>
             );
           })}
         </div>
-      </div>
+      )}
     </div>
   );
 }
