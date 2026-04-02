@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   CheckCircle2,
@@ -8,7 +8,11 @@ import {
   RotateCcw,
   Shuffle,
   BookOpen,
+  Eye,
 } from "lucide-react";
+import { useExam } from "@/context/ExamContext";
+import ExamToggle from "@/components/ExamToggle";
+import { PBQs_CORE2 } from "@/data/pbqCore2";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -280,11 +284,150 @@ const PBQs = [
       { id: "carbon",   label: "Prints multi-part carbon forms",       bucket: "impact"  },
     ],
   },
+  {
+    id: 9,
+    type: "match",
+    domain: "Hardware",
+    title: "USB & High-Speed Interface Speeds",
+    question:
+      "Match each interface standard to its maximum theoretical transfer speed. Click a standard on the left, then click the matching speed on the right.",
+    explanation:
+      "USB 2.0 — 480 Mbps (High Speed). Still used for keyboards, mice, and low-bandwidth peripherals.\n" +
+      "USB 3.2 Gen 1 — 5 Gbps (SuperSpeed). Formerly USB 3.0; the blue port standard.\n" +
+      "USB 3.2 Gen 2 — 10 Gbps (SuperSpeed+). Formerly USB 3.1.\n" +
+      "USB 3.2 Gen 2×2 — 20 Gbps. Requires USB-C; two 10 Gbps lanes bonded.\n" +
+      "USB4 Gen 3×2 — 40 Gbps. Same speed as Thunderbolt 3/4; requires USB-C.\n" +
+      "Thunderbolt 4 — 40 Gbps. USB-C connector; mandatory PCIe 4.0 tunneling, dual 4K.\n" +
+      "Thunderbolt 5 — 120 Gbps burst / 80 Gbps base. USB-C; PCIe 5.0 tunneling.\n" +
+      "SATA 3.0 — 6 Gbps. Standard connection for 2.5\" SSDs and HDDs.",
+    left: [
+      { id: "usb2",   label: "USB 2.0" },
+      { id: "usb31",  label: "USB 3.2 Gen 1" },
+      { id: "usb32",  label: "USB 3.2 Gen 2×2" },
+      { id: "usb4",   label: "USB4 Gen 3×2" },
+      { id: "tb4",    label: "Thunderbolt 4" },
+      { id: "tb5",    label: "Thunderbolt 5" },
+    ],
+    right: [
+      { id: "usb2",   label: "480 Mbps" },
+      { id: "usb31",  label: "5 Gbps" },
+      { id: "usb32",  label: "20 Gbps (USB-C only)" },
+      { id: "usb4",   label: "40 Gbps (USB-C)" },
+      { id: "tb4",    label: "40 Gbps (USB-C, PCIe 4.0)" },
+      { id: "tb5",    label: "80–120 Gbps (USB-C, PCIe 5.0)" },
+    ],
+  },
+  {
+    id: 10,
+    type: "bucket",
+    domain: "Hardware",
+    title: "Modern CPU Features Classification",
+    question:
+      "Classify each processor feature or characteristic into the correct CPU architecture or feature category.",
+    explanation:
+      "x86-64 (AMD64/Intel 64) — the dominant desktop/server architecture; CISC-based; runs all legacy Windows software natively.\n" +
+      "ARM64 (AArch64) — RISC-based; used in Apple Silicon (M-series), Qualcomm Snapdragon X, mobile SoCs; low power, high efficiency.\n" +
+      "NPU / AI Acceleration — dedicated neural processing units for ML inference; required for Copilot+ PC (40+ TOPS); found in Intel Core Ultra, AMD Ryzen AI, Apple M-series, Snapdragon X.\n" +
+      "PCIe & Platform — CPU-level connectivity specs: PCIe lanes, integrated memory controllers, chipset communication.",
+    buckets: [
+      { id: "x86",  label: "x86-64",    sublabel: "CISC · Desktop/Server" },
+      { id: "arm",  label: "ARM64",     sublabel: "RISC · Mobile/Efficient" },
+      { id: "npu",  label: "NPU / AI",  sublabel: "ML Inference" },
+      { id: "pcie", label: "PCIe Platform", sublabel: "Connectivity" },
+    ],
+    items: [
+      { id: "intel-cisc",  label: "Intel Core Ultra (CISC, x64 native)",    bucket: "x86"  },
+      { id: "amd-cisc",    label: "AMD Ryzen (x64, backward compatible)",    bucket: "x86"  },
+      { id: "legacy-win",  label: "Runs all legacy Windows 64-bit apps natively", bucket: "x86" },
+      { id: "apple-m",     label: "Apple M-series (macOS/iOS)",              bucket: "arm"  },
+      { id: "snapdragon",  label: "Qualcomm Snapdragon X Elite",             bucket: "arm"  },
+      { id: "arm-emul",    label: "Runs x64 via emulation on Windows",       bucket: "arm"  },
+      { id: "copilot-req", label: "40+ TOPS required for Copilot+ PC",       bucket: "npu"  },
+      { id: "local-ai",    label: "Enables local AI (no cloud) features",    bucket: "npu"  },
+      { id: "studio-fx",   label: "Windows Studio Effects processing",       bucket: "npu"  },
+      { id: "pcie5",       label: "PCIe 5.0 lanes (x16 = 64 GB/s)",         bucket: "pcie" },
+      { id: "pcie4",       label: "PCIe 4.0 NVMe M.2 slot",                 bucket: "pcie" },
+    ],
+  },
 ];
 
 // ── Match PBQ ─────────────────────────────────────────────────────────────────
 
-function MatchPBQ({ pbq }) {
+function MatchAnswer({ pbq }) {
+  return (
+    <div className="mt-4 rounded-lg border border-green-500/30 bg-green-500/5 p-4">
+      <p className="text-xs font-semibold text-green-700 dark:text-green-400 uppercase tracking-wide mb-3">
+        Correct Answers
+      </p>
+      <div className="space-y-1.5">
+        {pbq.left.map(({ id, label }) => {
+          const match = pbq.right.find((r) => r.id === id);
+          return (
+            <div key={id} className="flex items-start gap-2 text-sm">
+              <span className="font-medium min-w-0 shrink-0 max-w-[45%] truncate">{label}</span>
+              <span className="text-muted-foreground shrink-0">→</span>
+              <span className="text-green-700 dark:text-green-400 min-w-0">{match?.label}</span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function BucketAnswer({ pbq }) {
+  return (
+    <div className="mt-4 rounded-lg border border-green-500/30 bg-green-500/5 p-4">
+      <p className="text-xs font-semibold text-green-700 dark:text-green-400 uppercase tracking-wide mb-3">
+        Correct Answers
+      </p>
+      <div className="space-y-3">
+        {pbq.buckets.map((bucket) => {
+          const correctItems = pbq.items.filter((i) => i.bucket === bucket.id);
+          return (
+            <div key={bucket.id}>
+              <p className="text-xs font-bold text-primary mb-1">
+                {bucket.label}{bucket.sublabel ? ` — ${bucket.sublabel}` : ""}
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {correctItems.map((item) => (
+                  <span
+                    key={item.id}
+                    className="px-2 py-0.5 rounded-md border border-green-500/40 bg-green-500/10 text-green-700 dark:text-green-400 text-xs"
+                  >
+                    {item.label}
+                  </span>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function OrderAnswer({ pbq }) {
+  return (
+    <div className="mt-4 rounded-lg border border-green-500/30 bg-green-500/5 p-4">
+      <p className="text-xs font-semibold text-green-700 dark:text-green-400 uppercase tracking-wide mb-3">
+        Correct Order
+      </p>
+      <ol className="space-y-1.5">
+        {pbq.items.map((item, i) => (
+          <li key={item.id} className="flex items-center gap-2 text-sm">
+            <span className="font-mono text-xs text-muted-foreground w-4 text-right shrink-0">
+              {i + 1}.
+            </span>
+            <span className="text-green-700 dark:text-green-400">{item.label}</span>
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+}
+
+function MatchPBQ({ pbq, showAnswer }) {
   const [shuffledRight, setShuffledRight] = useState(() => shuffleArr(pbq.right));
   const [selectedLeft, setSelectedLeft] = useState(null);
   const [matched, setMatched] = useState({});
@@ -399,13 +542,15 @@ function MatchPBQ({ pbq }) {
           </span>
         )}
       </div>
+
+      {showAnswer && <MatchAnswer pbq={pbq} />}
     </div>
   );
 }
 
 // ── Bucket PBQ ────────────────────────────────────────────────────────────────
 
-function BucketPBQ({ pbq }) {
+function BucketPBQ({ pbq, showAnswer }) {
   const [shuffledItems] = useState(() => shuffleArr(pbq.items));
   const [selected, setSelected]       = useState(null);
   const [placements, setPlacements]   = useState({});
@@ -547,13 +692,15 @@ function BucketPBQ({ pbq }) {
             : `${correctCount} / ${pbq.items.length} correctly placed. Red items are in the wrong category — click them to move.`}
         </div>
       )}
+
+      {showAnswer && <BucketAnswer pbq={pbq} />}
     </div>
   );
 }
 
 // ── Order PBQ ─────────────────────────────────────────────────────────────────
 
-function OrderPBQ({ pbq }) {
+function OrderPBQ({ pbq, showAnswer }) {
   const [order, setOrder]     = useState(() => shuffleArr([...pbq.items]));
   const [checked, setChecked] = useState(false);
   const [dragging, setDragging] = useState(null);
@@ -643,6 +790,8 @@ function OrderPBQ({ pbq }) {
           {correctCount} / {pbq.items.length} steps in the right position. Items in red show the correct step number.
         </div>
       )}
+
+      {showAnswer && <OrderAnswer pbq={pbq} />}
     </div>
   );
 }
@@ -650,40 +799,58 @@ function OrderPBQ({ pbq }) {
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export default function PBQPage() {
-  const [pbqOrder, setPbqOrder]           = useState(() => PBQs.map((_, i) => i));
+  const { exam } = useExam();
+  const activePBQs = exam === "core2" ? PBQs_CORE2 : PBQs;
+
+  const [pbqOrder, setPbqOrder]           = useState(() => activePBQs.map((_, i) => i));
   const [pbqIndex, setPbqIndex]           = useState(0);
   const [showExplanation, setShowExplanation] = useState(false);
+  const [showAnswer, setShowAnswer]       = useState(false);
   const [subKey, setSubKey]               = useState(0);
 
-  const pbq = PBQs[pbqOrder[pbqIndex]];
+  useEffect(() => {
+    setPbqOrder(activePBQs.map((_, i) => i));
+    setPbqIndex(0);
+    setShowExplanation(false);
+    setShowAnswer(false);
+    setSubKey((k) => k + 1);
+  }, [exam]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const pbq = activePBQs[pbqOrder[pbqIndex]];
 
   const goTo = (i) => {
     setPbqIndex(i);
     setShowExplanation(false);
+    setShowAnswer(false);
     setSubKey((k) => k + 1);
   };
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl">
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-1">Performance-Based Questions</h1>
-        <p className="text-muted-foreground text-sm">
-          Interactive scenarios for CompTIA A+ Core 1 (220-1101)
-        </p>
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold mb-1">Performance-Based Questions</h1>
+          <p className="text-muted-foreground text-sm">
+            {exam === "core2"
+              ? "Interactive scenarios for CompTIA A+ Core 2 (220-1202)"
+              : "Interactive scenarios for CompTIA A+ Core 1 (220-1201)"}
+          </p>
+        </div>
+        <ExamToggle />
       </div>
 
       {/* Nav */}
       <div className="flex items-center justify-between mb-4">
         <span className="text-xs text-muted-foreground">
-          Question {pbqIndex + 1} / {PBQs.length}
+          Question {pbqIndex + 1} / {activePBQs.length}
         </span>
         <div className="flex gap-1">
           <Button
             variant="ghost"
             size="sm"
             onClick={() => {
-              setPbqOrder(shuffleArr(PBQs.map((_, i) => i)));
+              setPbqOrder(shuffleArr(activePBQs.map((_, i) => i)));
               goTo(0);
             }}
             className="gap-1.5 text-xs"
@@ -702,7 +869,7 @@ export default function PBQPage() {
             variant="ghost"
             size="sm"
             onClick={() => goTo(pbqIndex + 1)}
-            disabled={pbqIndex === PBQs.length - 1}
+            disabled={pbqIndex === activePBQs.length - 1}
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
@@ -722,13 +889,22 @@ export default function PBQPage() {
 
       {/* Interactive area — re-mounts on navigation to reset state */}
       <div key={subKey}>
-        {pbq.type === "match"  && <MatchPBQ  pbq={pbq} />}
-        {pbq.type === "bucket" && <BucketPBQ pbq={pbq} />}
-        {pbq.type === "order"  && <OrderPBQ  pbq={pbq} />}
+        {pbq.type === "match"  && <MatchPBQ  pbq={pbq} showAnswer={showAnswer} />}
+        {pbq.type === "bucket" && <BucketPBQ pbq={pbq} showAnswer={showAnswer} />}
+        {pbq.type === "order"  && <OrderPBQ  pbq={pbq} showAnswer={showAnswer} />}
       </div>
 
-      {/* Explanation */}
-      <div className="mt-6">
+      {/* Explanation + Answer */}
+      <div className="mt-6 flex flex-wrap gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShowAnswer((v) => !v)}
+          className="gap-1.5"
+        >
+          <Eye className="h-4 w-4" />
+          {showAnswer ? "Hide" : "Show"} Answer
+        </Button>
         <Button
           variant="outline"
           size="sm"
@@ -738,8 +914,9 @@ export default function PBQPage() {
           <BookOpen className="h-4 w-4" />
           {showExplanation ? "Hide" : "Show"} Explanation
         </Button>
-        {showExplanation && (
-          <div className="mt-3 rounded-lg border p-4 bg-muted/20">
+      </div>
+      {showExplanation && (
+        <div className="mt-3 rounded-lg border p-4 bg-muted/20">
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
               Explanation
             </p>
@@ -748,7 +925,6 @@ export default function PBQPage() {
             </pre>
           </div>
         )}
-      </div>
     </div>
   );
 }

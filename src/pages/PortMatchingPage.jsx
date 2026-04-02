@@ -1,7 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { RotateCcw, CheckCircle2, Shuffle, ArrowUpDown, PenLine } from "lucide-react";
+import { useExam } from "@/context/ExamContext";
+import ExamToggle from "@/components/ExamToggle";
+import { PORTS_CORE2 } from "@/data/portsCore2";
 
 const ALL_PORTS = [
   {
@@ -136,24 +139,38 @@ function shuffle(arr) {
 }
 
 export default function PortMatchingPage() {
-  const [shuffledPorts, setShuffledPorts] = useState(() => [...ALL_PORTS]);
-  const [shuffledNames, setShuffledNames] = useState(() => shuffle(ALL_PORTS));
+  const { exam } = useExam();
+  const activePorts = exam === "core2" ? PORTS_CORE2 : ALL_PORTS;
+
+  const [shuffledPorts, setShuffledPorts] = useState(() => [...activePorts]);
+  const [shuffledNames, setShuffledNames] = useState(() => shuffle(activePorts));
   const [selectedPortId, setSelectedPortId] = useState(null);
   const [matched, setMatched] = useState({});
   const [wrong, setWrong] = useState(null);
   const [attempts, setAttempts] = useState(0);
   const [quizMode, setQuizMode] = useState(false);
   const [quizAnswers, setQuizAnswers] = useState({});
-  const [quizOrder, setQuizOrder] = useState(() => [...ALL_PORTS]);
+  const [quizOrder, setQuizOrder] = useState(() => [...activePorts]);
+
+  useEffect(() => {
+    setShuffledPorts([...activePorts]);
+    setShuffledNames(shuffle(activePorts));
+    setSelectedPortId(null);
+    setMatched({});
+    setWrong(null);
+    setAttempts(0);
+    setQuizAnswers({});
+    setQuizOrder([...activePorts]);
+  }, [exam]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const matchedCount = Object.keys(matched).length;
-  const allMatched = matchedCount === ALL_PORTS.length;
+  const allMatched = matchedCount === activePorts.length;
   const accuracy =
     attempts > 0 ? Math.round((matchedCount / attempts) * 100) : null;
 
   const handleReset = () => {
-    setShuffledPorts([...ALL_PORTS]);
-    setShuffledNames(shuffle(ALL_PORTS));
+    setShuffledPorts([...activePorts]);
+    setShuffledNames(shuffle(activePorts));
     setSelectedPortId(null);
     setMatched({});
     setWrong(null);
@@ -185,11 +202,16 @@ export default function PortMatchingPage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-1">Port Matching</h1>
-        <p className="text-muted-foreground text-sm">
-          Match each port number to its protocol and service name
-        </p>
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold mb-1">Port Matching</h1>
+          <p className="text-muted-foreground text-sm">
+            {exam === "core2"
+              ? "Security & OS administration ports — Core 2 (220-1202)"
+              : "Match each port number to its protocol and service name"}
+          </p>
+        </div>
+        <ExamToggle />
       </div>
 
       {/* Score & Controls */}
@@ -199,7 +221,7 @@ export default function PortMatchingPage() {
             Matched:{" "}
             <span className="font-bold text-primary">{matchedCount}</span>
             {" / "}
-            {ALL_PORTS.length}
+            {activePorts.length}
           </span>
           {accuracy !== null && (
             <span className="text-muted-foreground">Accuracy: {accuracy}%</span>
@@ -209,7 +231,7 @@ export default function PortMatchingPage() {
           <Button
             variant={quizMode ? "default" : "outline"}
             size="sm"
-            onClick={() => { setQuizMode((v) => !v); setQuizAnswers({}); setQuizOrder([...ALL_PORTS]); }}
+            onClick={() => { setQuizMode((v) => !v); setQuizAnswers({}); setQuizOrder([...activePorts]); }}
             className="gap-1.5"
           >
             <PenLine className="h-4 w-4" />
@@ -227,7 +249,7 @@ export default function PortMatchingPage() {
       </div>
 
       <Progress
-        value={(matchedCount / ALL_PORTS.length) * 100}
+        value={(matchedCount / activePorts.length) * 100}
         className="h-1.5 mb-6"
       />
 
@@ -281,7 +303,7 @@ export default function PortMatchingPage() {
             <tbody>
               {quizOrder.map(({ id, name, protocol, fullName }, i) => {
                 const answer = quizAnswers[id] ?? "";
-                const isCorrect = answer.trim() === ALL_PORTS.find((p) => p.id === id).port;
+                const isCorrect = answer.trim() === activePorts.find((p) => p.id === id).port;
                 return (
                   <tr key={id} className={`border-t ${i % 2 === 0 ? "bg-background" : "bg-muted/10"}`}>
                     <td className="px-4 py-2">
@@ -321,7 +343,7 @@ export default function PortMatchingPage() {
               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mr-auto">
                 Port
               </p>
-              <Button variant="ghost" size="sm" onClick={() => setShuffledPorts([...ALL_PORTS])} className="h-6 px-1.5">
+              <Button variant="ghost" size="sm" onClick={() => setShuffledPorts([...activePorts])} className="h-6 px-1.5">
                 <ArrowUpDown className="h-3 w-3" />
               </Button>
               <Button variant="ghost" size="sm" onClick={() => setShuffledPorts(shuffle(shuffledPorts))} className="h-6 px-1.5">

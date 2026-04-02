@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Search,
   ChevronDown,
@@ -8,6 +8,9 @@ import {
   PenLine,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useExam } from "@/context/ExamContext";
+import ExamToggle from "@/components/ExamToggle";
+import { ACRONYMS_CORE2 } from "@/data/acronymsCore2";
 
 const ACRONYMS = [
   // ── Networking ────────────────────────────────────────────────────────────
@@ -1378,9 +1381,92 @@ const ACRONYMS = [
     category: "General IT",
     subcategory: "Misc",
   },
-];
 
-const CATEGORIES = ["All", ...new Set(ACRONYMS.map((a) => a.category))];
+  // ── New 220-1201 Terms ───────────────────────────────────────────────────
+  // USB & Connectivity
+  {
+    acronym: "USB4",
+    definition: "Universal Serial Bus 4 — up to 40 Gbps, USB-C only, Thunderbolt 3 protocol",
+    category: "Hardware",
+    subcategory: "Connectors & Cables",
+  },
+  {
+    acronym: "TB5",
+    definition: "Thunderbolt 5 — 80/120 Gbps, USB-C, PCIe 5.0 tunneling",
+    category: "Hardware",
+    subcategory: "Connectors & Cables",
+  },
+  {
+    acronym: "DP",
+    definition: "DisplayPort — packetized digital audio/video interface",
+    category: "Hardware",
+    subcategory: "Connectors & Cables",
+  },
+  // Memory & Storage
+  {
+    acronym: "LPDDR5",
+    definition: "Low Power DDR5 — soldered mobile/laptop RAM, more efficient than LPDDR4X",
+    category: "Hardware",
+    subcategory: "Memory",
+  },
+  {
+    acronym: "NVMe",
+    definition: "Non-Volatile Memory Express — PCIe-based SSD protocol, faster than AHCI/SATA",
+    category: "Hardware",
+    subcategory: "Storage",
+  },
+  {
+    acronym: "ZNS",
+    definition: "Zoned Namespace — NVMe 2.0 feature for managed SSD write zones",
+    category: "Hardware",
+    subcategory: "Storage",
+  },
+  // Processors & AI
+  {
+    acronym: "NPU",
+    definition: "Neural Processing Unit — dedicated AI/ML inference accelerator on SoC",
+    category: "Hardware",
+    subcategory: "CPU & Processing",
+  },
+  {
+    acronym: "TOPS",
+    definition: "Tera Operations Per Second — AI processing performance metric (Copilot+ needs 40+)",
+    category: "Hardware",
+    subcategory: "CPU & Processing",
+  },
+  {
+    acronym: "SoC",
+    definition: "System on a Chip — CPU, GPU, NPU, memory controller integrated in one die",
+    category: "Hardware",
+    subcategory: "CPU & Processing",
+  },
+  // Networking
+  {
+    acronym: "MLO",
+    definition: "Multi-Link Operation — Wi-Fi 7 feature using multiple bands simultaneously",
+    category: "Networking",
+    subcategory: "Wireless",
+  },
+  {
+    acronym: "OFDMA",
+    definition: "Orthogonal Frequency Division Multiple Access — Wi-Fi 6/7 channel sharing",
+    category: "Networking",
+    subcategory: "Wireless",
+  },
+  // Cloud & Virtualization
+  {
+    acronym: "IaC",
+    definition: "Infrastructure as Code — managing infrastructure via scripts/config files",
+    category: "Virtualization & Cloud",
+    subcategory: "Cloud",
+  },
+  {
+    acronym: "K8s",
+    definition: "Kubernetes — container orchestration platform",
+    category: "Virtualization & Cloud",
+    subcategory: "Cloud",
+  },
+];
 
 function groupData(items) {
   const result = {};
@@ -1394,6 +1480,10 @@ function groupData(items) {
 }
 
 export default function AcronymsPage() {
+  const { exam } = useExam();
+  const activeAcronyms = exam === "core2" ? ACRONYMS_CORE2 : ACRONYMS;
+  const activeCategories = ["All", ...new Set(activeAcronyms.map((a) => a.category))];
+
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [collapsed, setCollapsed] = useState({});
@@ -1402,9 +1492,16 @@ export default function AcronymsPage() {
   const [quizMode, setQuizMode] = useState(false);
   const [quizAnswers, setQuizAnswers] = useState({});
 
+  useEffect(() => {
+    setSelectedCategory("All");
+    setSearch("");
+    setQuizAnswers({});
+    setQuizMode(false);
+  }, [exam]);
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return ACRONYMS.filter((a) => {
+    return activeAcronyms.filter((a) => {
       const matchesCategory =
         selectedCategory === "All" || a.category === selectedCategory;
       const matchesSearch =
@@ -1413,7 +1510,7 @@ export default function AcronymsPage() {
         a.definition.toLowerCase().includes(q);
       return matchesCategory && matchesSearch;
     });
-  }, [search, selectedCategory]);
+  }, [search, selectedCategory, exam]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const grouped = useMemo(() => groupData(filtered), [filtered]);
   const isSearching = search.trim().length > 0;
@@ -1433,11 +1530,16 @@ export default function AcronymsPage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-1">Acronym List</h1>
-        <p className="text-muted-foreground text-sm">
-          CompTIA A+ Core 1 (220-1101) — {ACRONYMS.length} acronyms
-        </p>
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold mb-1">Acronym List</h1>
+          <p className="text-muted-foreground text-sm">
+            {exam === "core2"
+              ? `CompTIA A+ Core 2 (220-1202) — ${activeAcronyms.length} acronyms`
+              : `CompTIA A+ Core 1 (220-1201) — ${activeAcronyms.length} acronyms`}
+          </p>
+        </div>
+        <ExamToggle />
       </div>
 
       {/* Search */}
@@ -1454,11 +1556,11 @@ export default function AcronymsPage() {
 
       {/* Category Filter */}
       <div className="flex flex-wrap gap-2 mb-6">
-        {CATEGORIES.map((cat) => {
+        {activeCategories.map((cat) => {
           const count =
             cat === "All"
-              ? ACRONYMS.length
-              : ACRONYMS.filter((a) => a.category === cat).length;
+              ? activeAcronyms.length
+              : activeAcronyms.filter((a) => a.category === cat).length;
           return (
             <button
               key={cat}
@@ -1636,7 +1738,7 @@ export default function AcronymsPage() {
       </div>
 
       <p className="text-xs text-muted-foreground mt-4 text-right">
-        Showing {filtered.length} of {ACRONYMS.length}
+        Showing {filtered.length} of {activeAcronyms.length}
       </p>
     </div>
   );

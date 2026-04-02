@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   CheckCircle2,
@@ -7,6 +7,9 @@ import {
   ChevronUp,
   RotateCcw,
 } from "lucide-react";
+import { useExam } from "@/context/ExamContext";
+import ExamToggle from "@/components/ExamToggle";
+import { SCENARIOS_CORE2 } from "@/data/pcBuilderCore2";
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 const SCENARIOS = [
@@ -193,12 +196,21 @@ const SCENARIOS = [
 
 // ── Main component ─────────────────────────────────────────────────────────────
 export default function PCBuilderPage() {
-  const [activeTab, setActiveTab]   = useState("gaming");
+  const { exam } = useExam();
+  const activeScenarios = exam === "core2" ? SCENARIOS_CORE2 : SCENARIOS;
+
+  const [activeTab, setActiveTab]   = useState(activeScenarios[0].id);
   const [selections, setSelections] = useState({});
   const [submitted, setSubmitted]   = useState({});
   const [showReqs, setShowReqs]     = useState(true);
 
-  const scenario    = SCENARIOS.find((s) => s.id === activeTab);
+  useEffect(() => {
+    setActiveTab(activeScenarios[0].id);
+    setSelections({});
+    setSubmitted({});
+  }, [exam]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const scenario    = activeScenarios.find((s) => s.id === activeTab) ?? activeScenarios[0];
   const key         = (scenId, catId) => `${scenId}-${catId}`;
   const isSubmitted = submitted[activeTab];
 
@@ -261,16 +273,23 @@ export default function PCBuilderPage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       {/* Page header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-1">PC Builder Challenge</h1>
-        <p className="text-muted-foreground text-sm">
-          Select the best component for each category based on the scenario requirements, then submit to see your results.
-        </p>
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold mb-1">
+            {exam === "core2" ? "Security & OS Scenarios" : "PC Builder Challenge"}
+          </h1>
+          <p className="text-muted-foreground text-sm">
+            {exam === "core2"
+              ? "Choose the best security or OS configuration for each scenario."
+              : "Select the best component for each category based on the scenario requirements."}
+          </p>
+        </div>
+        <ExamToggle />
       </div>
 
       {/* Tab buttons */}
-      <div className="flex gap-2 mb-6">
-        {SCENARIOS.map((s) => (
+      <div className="flex flex-wrap gap-2 mb-6">
+        {activeScenarios.map((s) => (
           <button
             key={s.id}
             onClick={() => setActiveTab(s.id)}

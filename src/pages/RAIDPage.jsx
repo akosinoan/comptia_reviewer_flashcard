@@ -10,6 +10,8 @@ import {
   RotateCcw,
   Shuffle,
 } from "lucide-react";
+import { useExam } from "@/context/ExamContext";
+import ExamToggle from "@/components/ExamToggle";
 
 // ── Scenarios ─────────────────────────────────────────────────────────────────
 const SCENARIOS = [
@@ -304,6 +306,7 @@ function shuffleArr(arr) {
 }
 
 export default function RAIDPage() {
+  const { exam } = useExam();
   const [order, setOrder] = useState(() => shuffleArr(SCENARIOS.map((_, i) => i)));
   const [scenarioIndex, setScenarioIndex] = useState(0);
   const [selectedRaid, setSelectedRaid]   = useState(null);
@@ -392,12 +395,22 @@ export default function RAIDPage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl">
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-1">RAID Configuration</h1>
-        <p className="text-muted-foreground text-sm">
-          Read the requirement, select the correct RAID level, and drag the matching drives into the bays
-        </p>
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold mb-1">RAID Configuration</h1>
+          <p className="text-muted-foreground text-sm">
+            {exam === "core2"
+              ? "Core 1 topic shown — RAID is covered in 220-1201 Hardware domain"
+              : "Read the requirement, select the correct RAID level, and drag the matching drives into the bays"}
+          </p>
+        </div>
+        <ExamToggle />
       </div>
+      {exam === "core2" && (
+        <div className="mb-4 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-sm text-amber-700 dark:text-amber-400">
+          RAID configuration is a <strong>Core 1 (220-1201)</strong> topic under Hardware. It is not directly tested on Core 2, but practicing it reinforces your overall A+ knowledge.
+        </div>
+      )}
 
       {/* Scenario nav */}
       <div className="flex items-center justify-between mb-4">

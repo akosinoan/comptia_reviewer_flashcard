@@ -10,6 +10,7 @@ const NAV_LINKS = [
   { to: "/raid",      label: "RAID" },
   { to: "/pbq",       label: "PBQ" },
   { to: "/pcbuilder", label: "PC Builder" },
+  { to: "/commands",  label: "Commands" },
 ];
 
 export default function Navbar({ theme, onToggle }) {
@@ -26,7 +27,7 @@ export default function Navbar({ theme, onToggle }) {
           onClick={() => setOpen(false)}
         >
           <BookOpen className="h-6 w-6 text-primary" />
-          <span>CompTIA Core 1</span>
+          <span>CompTIA A+ Reviewer</span>
         </Link>
 
         {/* Desktop links */}

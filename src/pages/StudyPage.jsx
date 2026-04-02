@@ -1,5 +1,8 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { questions, categories } from "@/data/questions";
+import { questionsCore2, categoriesCore2 } from "@/data/questionsCore2";
+import { useExam } from "@/context/ExamContext";
+import ExamToggle from "@/components/ExamToggle";
 import FlashCard from "@/components/FlashCard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,15 +17,25 @@ import {
 } from "lucide-react";
 
 export default function StudyPage() {
+  const { exam } = useExam();
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [showBothSides, setShowBothSides] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [cardKey, setCardKey] = useState(0); // force remount on navigation
 
+  const activeQuestions = exam === "core2" ? questionsCore2 : questions;
+  const activeCategories = exam === "core2" ? categoriesCore2 : categories;
+
+  useEffect(() => {
+    setSelectedCategory("All");
+    setCurrentIndex(0);
+    setCardKey((k) => k + 1);
+  }, [exam]);
+
   const filteredCards =
     selectedCategory === "All"
-      ? questions
-      : questions.filter((q) => q.category === selectedCategory);
+      ? activeQuestions
+      : activeQuestions.filter((q) => q.category === selectedCategory);
 
   const currentCard = filteredCards[currentIndex];
   const progress = filteredCards.length > 0 ? ((currentIndex + 1) / filteredCards.length) * 100 : 0;
@@ -49,6 +62,12 @@ export default function StudyPage() {
   };
 
   const handleCategoryChange = (cat) => {
+    setSelectedCategory("All");
+    setCurrentIndex(0);
+    setCardKey((k) => k + 1);
+  };
+
+  const handleCategoryFilter = (cat) => {
     setSelectedCategory(cat);
     setCurrentIndex(0);
     setCardKey((k) => k + 1);
@@ -57,11 +76,14 @@ export default function StudyPage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl">
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-1">Study Flashcards</h1>
-        <p className="text-muted-foreground text-sm">
-          CompTIA A+ Core 1 (220-1101)
-        </p>
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold mb-1">Study Flashcards</h1>
+          <p className="text-muted-foreground text-sm">
+            {exam === "core2" ? "CompTIA A+ Core 2 (220-1202)" : "CompTIA A+ Core 1 (220-1201)"}
+          </p>
+        </div>
+        <ExamToggle />
       </div>
 
       {/* Category Filter */}
@@ -71,21 +93,21 @@ export default function StudyPage() {
         </p>
         <div className="flex flex-wrap gap-2">
           <button
-            onClick={() => handleCategoryChange("All")}
+            onClick={() => handleCategoryFilter("All")}
             className={`px-3 py-1 rounded-full text-sm font-medium border transition-colors ${
               selectedCategory === "All"
                 ? "bg-primary text-primary-foreground border-primary"
                 : "bg-background text-foreground border-border hover:bg-accent"
             }`}
           >
-            All ({questions.length})
+            All ({activeQuestions.length})
           </button>
-          {categories.map((cat) => {
-            const count = questions.filter((q) => q.category === cat).length;
+          {activeCategories.map((cat) => {
+            const count = activeQuestions.filter((q) => q.category === cat).length;
             return (
               <button
                 key={cat}
-                onClick={() => handleCategoryChange(cat)}
+                onClick={() => handleCategoryFilter(cat)}
                 className={`px-3 py-1 rounded-full text-sm font-medium border transition-colors ${
                   selectedCategory === cat
                     ? "bg-primary text-primary-foreground border-primary"

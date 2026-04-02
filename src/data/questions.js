@@ -537,16 +537,16 @@ export const questions = [
     category: "3.0 Hardware",
     topic: "3.2 Peripheral Cables",
     question: "What are the USB versions and their maximum speeds?",
-    answer: "USB 1.1: 1.5/12 Mbps | USB 2.0: 480 Mbps | USB 3.0: 5 Gbps | USB 3.1: 10 Gbps | USB 3.2: 20 Gbps",
-    explanation: "USB 1.1: Low speed 1.5 Mbps (3m) / Full speed 12 Mbps (5m). USB 2.0: 480 Mbps at 5m. USB 3.0 SuperSpeed: 5 Gbps. USB 3.1: 10 Gbps. USB 3.2: 20 Gbps. USB-C is just the physical connector — actual signal depends on device specifications."
+    answer: "USB 1.1: 1.5/12 Mbps | USB 2.0: 480 Mbps | USB 3.2 Gen 1: 5 Gbps | USB 3.2 Gen 2: 10 Gbps | USB 3.2 Gen 2×2: 20 Gbps | USB4 Gen 2×2: 20 Gbps | USB4 Gen 3×2: 40 Gbps",
+    explanation: "USB 1.1: Low/Full speed (1.5/12 Mbps). USB 2.0: 480 Mbps. USB 3.2 Gen 1 (formerly USB 3.0): 5 Gbps. USB 3.2 Gen 2 (formerly USB 3.1): 10 Gbps. USB 3.2 Gen 2×2: 20 Gbps (USB-C only). USB4 Gen 2×2: 20 Gbps (USB-C, requires TB3/4 controller). USB4 Gen 3×2: 40 Gbps — same speed as Thunderbolt 3/4, requires USB-C. USB-C is a physical connector shape only; check device specs for actual USB version."
   },
   {
     id: 67,
     category: "3.0 Hardware",
     topic: "3.2 Peripheral Cables",
-    question: "What is Thunderbolt and how has it evolved through versions 1–4?",
-    answer: "High-speed serial connector (data+power). TB1: 20Gbps, Mini DP | TB2: 20Gbps agg, Mini DP | TB3: 40Gbps, USB-C | TB4: 40Gbps, USB-C, dual 4K, more PCIe",
-    explanation: "Thunderbolt 1: 10 Gbit/s per channel (20 Gbps total), Mini DisplayPort. TB2: 20 Gbps aggregated, Mini DP. TB3: 40 Gbps, USB-C connector, up to 6 daisy-chained devices, 3m copper/60m optical. TB4: 40 Gbps, USB-C, dual 4K display support, increased PCIe bandwidth."
+    question: "What is Thunderbolt and how has it evolved through versions 1–5?",
+    answer: "High-speed serial connector. TB1/2: Mini DP, 20Gbps | TB3: 40Gbps, USB-C | TB4: 40Gbps, USB-C, stricter requirements | TB5: 120Gbps (80Gbps base), USB-C, PCIe 5.0",
+    explanation: "Thunderbolt 1: 20 Gbps, Mini DisplayPort. TB2: 20 Gbps aggregated, Mini DP. TB3: 40 Gbps, USB-C connector, up to 6 daisy-chained devices. TB4: 40 Gbps, USB-C, dual 4K or single 8K display, mandatory PCIe 4.0 tunneling — stricter certification than TB3. TB5 (2024+): 80 Gbps base / 120 Gbps burst, USB-C, PCIe 5.0 tunneling, supports up to 240W power delivery, required for latest eGPU and high-bandwidth displays."
   },
   {
     id: 68,
@@ -664,9 +664,9 @@ export const questions = [
     id: 82,
     category: "3.0 Hardware",
     topic: "3.5 Motherboard Expansion Slots",
-    question: "What is PCIe and what lane configurations are available?",
-    answer: "Peripheral Component Interconnect Express — serial lanes x1, x2, x4, x8, x16, x32; replaces PCI; each device has its own dedicated lanes",
-    explanation: "PCIe communicates serially through unidirectional lanes. Available configurations: x1, x4, x8, x16, x32 (pronounced 'by 4', 'by 16'). Slower devices in larger slots don't slow others because lanes are independent. Modern PCIe can transfer 64 Gbps per lane."
+    question: "What is PCIe and how do its versions differ?",
+    answer: "Peripheral Component Interconnect Express — serial x1/x4/x8/x16 lanes. PCIe 3.0: ~1 GB/s/lane | PCIe 4.0: ~2 GB/s/lane | PCIe 5.0: ~4 GB/s/lane | PCIe 6.0: ~8 GB/s/lane",
+    explanation: "PCIe uses independent serial lanes (x1, x4, x8, x16). Version bandwidth per lane: PCIe 3.0 ≈ 1 GB/s (x16 = 16 GB/s), PCIe 4.0 ≈ 2 GB/s (x16 = 32 GB/s), PCIe 5.0 ≈ 4 GB/s (x16 = 64 GB/s), PCIe 6.0 ≈ 8 GB/s. Cards are backward/forward compatible — a PCIe 5.0 NVMe SSD in a PCIe 3.0 slot runs at PCIe 3.0 speed. PCIe 5.0 slots are on current Intel/AMD platforms and used by the latest NVMe SSDs and GPUs."
   },
   {
     id: 83,
@@ -720,9 +720,9 @@ export const questions = [
     id: 89,
     category: "3.0 Hardware",
     topic: "3.5 CPU Features",
-    question: "What is ARM architecture and where is it commonly used?",
-    answer: "Advanced RISC Machine — simplified instruction set, efficient, low power, low heat; traditional use in mobile/IoT, now also desktops (Apple Silicon)",
-    explanation: "ARM uses a Reduced Instruction Set Computing (RISC) design: simplified instructions, efficient processing, lower power and heat. Traditionally in mobile devices and IoT. Now used in desktop/laptop CPUs (Apple M-series). ARM Ltd. designs the architecture and licenses it to manufacturers."
+    question: "What is ARM architecture and where is it used in modern computing?",
+    answer: "Advanced RISC Machine — simplified instruction set, low power, low heat; used in mobile, IoT, and now mainstream laptops (Apple M-series, Qualcomm Snapdragon X)",
+    explanation: "ARM uses Reduced Instruction Set Computing (RISC): simplified instructions, highly efficient per watt. ARM Ltd. licenses designs to manufacturers. Used in: all smartphones/tablets, IoT devices, Apple Silicon (M1–M4), Qualcomm Snapdragon X Elite for Windows laptops, AWS Graviton servers. ARM64 (AArch64) is the 64-bit instruction set. Key exam point: ARM-based Windows laptops run x64 apps via emulation and native ARM64 apps natively."
   },
   {
     id: 90,
@@ -1063,6 +1063,74 @@ export const questions = [
     question: "What is flash memory and what are its limitations?",
     answer: "EEPROM non-volatile memory — no power to retain data, limited write cycles, not designed for archival storage; always have a backup",
     explanation: "Flash memory (EEPROM — Electrically Erasable Programmable Read-Only Memory) is non-volatile — no power required to retain data. Limited number of write cycles (can still read after writes are exhausted). Not designed for long-term archival storage — easy to lose or damage. Always maintain a backup."
+  },
+
+  // ─────────────────────────────────────────────
+  // NEW 220-1201 OBJECTIVES
+  // ─────────────────────────────────────────────
+  {
+    id: 131,
+    category: "3.0 Hardware",
+    topic: "3.2 Peripheral Cables",
+    question: "What is USB4 and how does it differ from USB 3.2?",
+    answer: "USB4 uses Thunderbolt 3 protocol over USB-C; Gen 2×2: 20 Gbps, Gen 3×2: 40 Gbps — requires USB-C, doubles bandwidth of USB 3.2",
+    explanation: "USB4 is based on the Thunderbolt 3 protocol and requires a USB-C connector. USB4 Gen 2×2 reaches 20 Gbps; USB4 Gen 3×2 reaches 40 Gbps — matching Thunderbolt 3/4 speeds. USB4 also supports video output (DisplayPort, HDMI via alt mode) and PCIe tunneling. Always check the device's spec sheet — a USB-C port does NOT guarantee USB4 speed."
+  },
+  {
+    id: 132,
+    category: "3.0 Hardware",
+    topic: "3.3 Memory Technologies",
+    question: "What is LPDDR5 memory and where is it used?",
+    answer: "Low Power DDR5 — soldered laptop/mobile RAM running at lower voltage (1.1V vs 1.1V DDR5); faster and more power-efficient than LPDDR4X; used in ultrabooks and ARM laptops",
+    explanation: "LPDDR (Low Power Double Data Rate) memory is soldered directly to the motherboard in laptops, tablets, and smartphones to save space and power. LPDDR5 offers speeds up to 6400 MT/s with better power efficiency than LPDDR4X. It is common in Qualcomm Snapdragon X, Apple M-series, and thin-and-light Intel/AMD laptops. Because it is soldered, it cannot be upgraded — capacity is fixed at purchase."
+  },
+  {
+    id: 133,
+    category: "3.0 Hardware",
+    topic: "3.4 Storage Devices",
+    question: "What is NVMe 2.0 and what new features does it add over NVMe 1.x?",
+    answer: "NVMe 2.0 (2021+) adds: Zoned Namespace (ZNS) for SSDs, Key Value storage, new command sets for hard drives and optical media, and improved PCIe 5.0 support",
+    explanation: "NVMe 2.0 is the updated NVMe specification released in 2021. Key additions: Zoned Namespace (ZNS) command set allows drives to be managed in zones for better SSD longevity and throughput. Key Value (KV) command set optimizes NoSQL-style storage. Command sets for HDDs and Fabrics (NVMe-oF). NVMe 2.0 also officially supports PCIe 5.0, enabling consumer SSDs exceeding 12 GB/s read speeds. Most modern high-end M.2 SSDs are NVMe 2.0 compatible."
+  },
+  {
+    id: 134,
+    category: "3.0 Hardware",
+    topic: "3.5 CPU Features",
+    question: "What is an NPU and why is it included in modern processors?",
+    answer: "Neural Processing Unit — dedicated AI/ML inference accelerator built into the CPU/SoC; offloads AI workloads from CPU/GPU for efficiency (Copilot+ PC requirement)",
+    explanation: "An NPU (Neural Processing Unit) is a specialized processor core designed to accelerate machine learning inference operations (matrix math, tensor operations). Modern SoCs include NPUs: Apple M-series, Qualcomm Snapdragon X Elite, AMD Ryzen AI, Intel Core Ultra (Meteor Lake+). Microsoft's Copilot+ PC requirement mandates 40+ TOPS (Tera Operations Per Second) NPU performance. NPUs enable local AI features like Windows Studio Effects, real-time translation, and AI image generation without internet connectivity."
+  },
+  {
+    id: 135,
+    category: "2.0 Networking",
+    topic: "2.2 Wireless Network Technologies",
+    question: "What are the key new features of Wi-Fi 7 (802.11be) compared to Wi-Fi 6E?",
+    answer: "Multi-Link Operation (MLO): simultaneous use of multiple bands; 320 MHz channels; 4096-QAM; up to 46 Gbps theoretical — major improvement in latency and throughput",
+    explanation: "Wi-Fi 7 (802.11be) improvements over Wi-Fi 6/6E: Multi-Link Operation (MLO) allows a device to transmit and receive simultaneously across 2.4, 5, and 6 GHz bands — reducing latency and increasing throughput. 320 MHz channel width (vs 160 MHz in Wi-Fi 6E) doubles bandwidth. 4096-QAM modulation (vs 1024-QAM) increases data density. Up to 16 spatial streams. Theoretical max ~46 Gbps. Key exam point: MLO is the signature feature of Wi-Fi 7."
+  },
+  {
+    id: 136,
+    category: "1.0 Mobile Devices",
+    topic: "1.1 Laptop Hardware",
+    question: "What are the key hardware considerations for ARM-based Windows laptops?",
+    answer: "ARM64 apps run natively; x64 apps run via emulation (slower); x86-32 apps supported; no legacy x64 drivers — check hardware compatibility before deployment",
+    explanation: "ARM-based Windows laptops (Qualcomm Snapdragon X, Microsoft Surface Pro X) run ARM64 apps natively at full speed. x64 (Intel/AMD) apps run through Rosetta-like emulation — functional but with performance overhead. 32-bit x86 apps also supported via emulation. Critical limitation: x64 kernel drivers (antivirus, hardware tools) may not work — organizations must verify software compatibility. Apple Silicon (M-series) runs macOS natively and Windows via virtualization."
+  },
+  {
+    id: 137,
+    category: "4.0 Virtualization & Cloud",
+    topic: "4.2 Cloud Models",
+    question: "What is Infrastructure as Code (IaC) and why is it important in cloud environments?",
+    answer: "Managing infrastructure through code/scripts rather than manual configuration — enables repeatable, version-controlled, automated deployments (Terraform, Ansible, ARM templates)",
+    explanation: "Infrastructure as Code (IaC) treats infrastructure configuration as software: written in files, stored in version control (Git), reviewed, and automatically applied. Tools include: Terraform (multi-cloud), Ansible (agentless configuration), AWS CloudFormation, Azure Resource Manager (ARM) templates. IaC ensures environments are consistent (no manual configuration drift), deployments are repeatable, and changes are auditable. Key exam concept: IaC is a foundational practice in DevOps and cloud operations."
+  },
+  {
+    id: 138,
+    category: "5.0 Troubleshooting",
+    topic: "5.1 Troubleshooting Hardware",
+    question: "A system with a modern PCIe 5.0 NVMe SSD installed runs much slower than expected. What are likely causes?",
+    answer: "BIOS slot not configured for PCIe 5.0, insufficient cooling (PCIe 5.0 SSDs run very hot), M.2 slot on PCIe 3.0/4.0 lanes, or PCIe bifurcation settings",
+    explanation: "PCIe 5.0 NVMe SSDs reach 12+ GB/s but have specific requirements: the M.2 slot must be wired to PCIe 5.0 lanes from the CPU (not chipset lanes which are typically PCIe 4.0 or 3.0). Check BIOS for PCIe bifurcation and generation settings. PCIe 5.0 SSDs generate significant heat — a heatsink or active cooler is often required to sustain peak speeds. Verify the SSD is recognized at its correct PCIe generation in BIOS before OS troubleshooting."
   },
 ];
 

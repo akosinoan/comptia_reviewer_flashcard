@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { BookOpen, CheckCircle, Layers, Monitor } from "lucide-react";
+import { useExam } from "@/context/ExamContext";
+import ExamToggle from "@/components/ExamToggle";
 
 const features = [
   {
@@ -30,18 +32,24 @@ const features = [
 ];
 
 export default function LandingPage() {
+  const { exam } = useExam();
+  const isCore2 = exam === "core2";
+
   return (
     <div className="flex flex-col">
       {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-background py-20 md:py-32">
         <div className="container mx-auto px-4 text-center">
-          <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary mb-6">
+          <div className="flex justify-center mb-6">
+            <ExamToggle />
+          </div>
+          <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary mb-4">
             <BookOpen className="h-4 w-4" />
-            CompTIA A+ Core 1 (220-1101)
+            {isCore2 ? "CompTIA A+ Core 2 (220-1202)" : "CompTIA A+ Core 1 (220-1201)"}
           </div>
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
             Ace Your CompTIA
-            <span className="text-primary block">Core 1 Exam</span>
+            <span className="text-primary block">{isCore2 ? "Core 2 Exam" : "Core 1 Exam"}</span>
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10">
             Study smarter with interactive flashcards covering all exam domains.
@@ -122,7 +130,7 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="border-t py-6">
         <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          CompTIA Core 1 Reviewer — Built for study purposes.
+          CompTIA A+ Reviewer (220-1201 / 220-1202) — Built for study purposes.
         </div>
       </footer>
     </div>

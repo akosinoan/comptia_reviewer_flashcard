@@ -8,6 +8,8 @@ import AcronymsPage from "./pages/AcronymsPage";
 import RAIDPage from "./pages/RAIDPage";
 import PBQPage from "./pages/PBQPage";
 import PCBuilderPage from "./pages/PCBuilderPage";
+import CommandsPage from "./pages/CommandsPage";
+import { ExamProvider } from "./context/ExamContext";
 
 export default function App() {
   const [theme, setTheme] = useState(() => {
@@ -32,6 +34,7 @@ export default function App() {
 
   return (
     <BrowserRouter basename={import.meta.env.BASE_URL}>
+      <ExamProvider>
       <div className="min-h-screen bg-background text-foreground">
         <Navbar theme={theme} onToggle={toggleTheme} />
         <main>
@@ -43,9 +46,11 @@ export default function App() {
             <Route path="/raid" element={<RAIDPage />} />
             <Route path="/pbq" element={<PBQPage />} />
             <Route path="/pcbuilder" element={<PCBuilderPage />} />
+            <Route path="/commands" element={<CommandsPage />} />
           </Routes>
         </main>
       </div>
+      </ExamProvider>
     </BrowserRouter>
   );
 }
