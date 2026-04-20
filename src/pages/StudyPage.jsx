@@ -1,11 +1,8 @@
-import { useState, useCallback, useEffect } from "react";
-import { questions, categories } from "@/data/questions";
-import { questionsCore2, categoriesCore2 } from "@/data/questionsCore2";
-import { useExam } from "@/context/ExamContext";
-import ExamToggle from "@/components/ExamToggle";
+import { useStudyCards } from "@/hooks/useStudyCards";
+import PageHeader from "@/components/shared/PageHeader";
+import CategoryPills from "@/components/shared/CategoryPills";
 import FlashCard from "@/components/FlashCard";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import {
   ChevronLeft,
@@ -17,111 +14,49 @@ import {
 } from "lucide-react";
 
 export default function StudyPage() {
-  const { exam } = useExam();
-  const [selectedCategory, setSelectedCategory] = useState("All");
-  const [showBothSides, setShowBothSides] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [cardKey, setCardKey] = useState(0); // force remount on navigation
-
-  const activeQuestions = exam === "core2" ? questionsCore2 : questions;
-  const activeCategories = exam === "core2" ? categoriesCore2 : categories;
-
-  useEffect(() => {
-    setSelectedCategory("All");
-    setCurrentIndex(0);
-    setCardKey((k) => k + 1);
-  }, [exam]);
-
-  const filteredCards =
-    selectedCategory === "All"
-      ? activeQuestions
-      : activeQuestions.filter((q) => q.category === selectedCategory);
-
-  const currentCard = filteredCards[currentIndex];
-  const progress = filteredCards.length > 0 ? ((currentIndex + 1) / filteredCards.length) * 100 : 0;
-
-  const goNext = useCallback(() => {
-    setCurrentIndex((i) => Math.min(i + 1, filteredCards.length - 1));
-    setCardKey((k) => k + 1);
-  }, [filteredCards.length]);
-
-  const goPrev = useCallback(() => {
-    setCurrentIndex((i) => Math.max(i - 1, 0));
-    setCardKey((k) => k + 1);
-  }, []);
-
-  const handleShuffle = () => {
-    const randomIndex = Math.floor(Math.random() * filteredCards.length);
-    setCurrentIndex(randomIndex);
-    setCardKey((k) => k + 1);
-  };
-
-  const handleReset = () => {
-    setCurrentIndex(0);
-    setCardKey((k) => k + 1);
-  };
-
-  const handleCategoryChange = (cat) => {
-    setSelectedCategory("All");
-    setCurrentIndex(0);
-    setCardKey((k) => k + 1);
-  };
-
-  const handleCategoryFilter = (cat) => {
-    setSelectedCategory(cat);
-    setCurrentIndex(0);
-    setCardKey((k) => k + 1);
-  };
+  const {
+    exam,
+    filteredCards,
+    currentCard,
+    currentIndex,
+    cardKey,
+    progress,
+    selectedCategory,
+    showBothSides,
+    pillCategories,
+    setCurrentIndex,
+    setCardKey,
+    setShowBothSides,
+    goNext,
+    goPrev,
+    handleShuffle,
+    handleReset,
+    handleCategoryFilter,
+  } = useStudyCards();
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl">
-      {/* Header */}
-      <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold mb-1">Study Flashcards</h1>
-          <p className="text-muted-foreground text-sm">
-            {exam === "core2" ? "CompTIA A+ Core 2 (220-1202)" : "CompTIA A+ Core 1 (220-1201)"}
-          </p>
-        </div>
-        <ExamToggle />
-      </div>
+      <PageHeader
+        title="Study Flashcards"
+        subtitle={
+          exam === "core2"
+            ? "CompTIA A+ Core 2 (220-1202)"
+            : "CompTIA A+ Core 1 (220-1201)"
+        }
+      />
 
-      {/* Category Filter */}
       <div className="mb-6">
         <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
           Filter by Category
         </p>
-        <div className="flex flex-wrap gap-2">
-          <button
-            onClick={() => handleCategoryFilter("All")}
-            className={`px-3 py-1 rounded-full text-sm font-medium border transition-colors ${
-              selectedCategory === "All"
-                ? "bg-primary text-primary-foreground border-primary"
-                : "bg-background text-foreground border-border hover:bg-accent"
-            }`}
-          >
-            All ({activeQuestions.length})
-          </button>
-          {activeCategories.map((cat) => {
-            const count = activeQuestions.filter((q) => q.category === cat).length;
-            return (
-              <button
-                key={cat}
-                onClick={() => handleCategoryFilter(cat)}
-                className={`px-3 py-1 rounded-full text-sm font-medium border transition-colors ${
-                  selectedCategory === cat
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "bg-background text-foreground border-border hover:bg-accent"
-                }`}
-              >
-                {cat} ({count})
-              </button>
-            );
-          })}
-        </div>
+        <CategoryPills
+          categories={pillCategories}
+          selected={selectedCategory}
+          onSelect={handleCategoryFilter}
+          size="sm"
+        />
       </div>
 
-      {/* Controls */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Button
@@ -152,17 +87,14 @@ export default function StudyPage() {
         </span>
       </div>
 
-      {/* Progress Bar */}
       <Progress value={progress} className="h-2 mb-6" />
 
-      {/* Flash Card */}
       {currentCard ? (
         <FlashCard key={cardKey} card={currentCard} showBothSides={showBothSides} />
       ) : (
         <div className="text-center py-20 text-muted-foreground">No cards found.</div>
       )}
 
-      {/* Navigation */}
       <div className="flex items-center justify-between mt-6">
         <Button
           variant="outline"
@@ -177,7 +109,10 @@ export default function StudyPage() {
             filteredCards.map((_, i) => (
               <button
                 key={i}
-                onClick={() => { setCurrentIndex(i); setCardKey(k => k + 1); }}
+                onClick={() => {
+                  setCurrentIndex(i);
+                  setCardKey((k) => k + 1);
+                }}
                 className={`w-2 h-2 rounded-full transition-colors ${
                   i === currentIndex ? "bg-primary" : "bg-muted-foreground/30"
                 }`}

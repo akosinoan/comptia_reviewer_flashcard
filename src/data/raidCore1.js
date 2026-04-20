@@ -1,0 +1,138 @@
+// RAID scenario data for CompTIA A+ Core 1 (220-1201)
+export const SCENARIOS = [
+  {
+    id: 1,
+    title: "Video Editing Workstation",
+    requirement:
+      "A video production company needs the fastest possible read/write speeds for 4K footage editing. They maintain offsite backups so hardware data loss is acceptable.",
+    requiredCapacity: "1 TB",
+    requiredInterface: "NVMe",
+    correctRaid: "RAID 0",
+    storageEfficiency: "100%",
+    totalUsable: "2 TB",
+    faultTolerance: "None",
+    explanation:
+      "RAID 0 stripes data across both drives — blocks alternate between drives so reads and writes happen to both simultaneously, doubling throughput. NVMe drives are required for maximum speed (PCIe bus vs. SATA). Drives must match in capacity and interface; mixing sizes wastes space, mixing interfaces causes bottlenecks.",
+    drives: [
+      { id: 1, capacity: "1 TB",   iface: "NVMe",     correct: true  },
+      { id: 2, capacity: "1 TB",   iface: "NVMe",     correct: true  },
+      { id: 3, capacity: "2 TB",   iface: "NVMe",     correct: false },
+      { id: 4, capacity: "1 TB",   iface: "SATA SSD", correct: false },
+      { id: 5, capacity: "512 GB", iface: "NVMe",     correct: false },
+      { id: 6, capacity: "1 TB",   iface: "SATA HDD", correct: false },
+      { id: 7, capacity: "256 GB", iface: "NVMe",     correct: false },
+      { id: 8, capacity: "2 TB",   iface: "SATA SSD", correct: false },
+      { id: 9, capacity: "4 TB",   iface: "NVMe",     correct: false },
+    ],
+  },
+  {
+    id: 2,
+    title: "Small Business File Server",
+    requirement:
+      "A small accounting firm needs their file server to survive a single hard drive failure without data loss. Reliability matters more than peak speed.",
+    requiredCapacity: "2 TB",
+    requiredInterface: "SATA SSD",
+    correctRaid: "RAID 1",
+    storageEfficiency: "50%",
+    totalUsable: "2 TB",
+    faultTolerance: "1 drive",
+    explanation:
+      "RAID 1 mirrors data identically across both drives. If one fails, the other holds a complete copy and the server keeps running. SATA SSD strikes the right balance of cost, reliability, and performance for a file server. Drives must match in capacity — a mismatch would limit usable space to the smaller drive.",
+    drives: [
+      { id: 1,  capacity: "2 TB",   iface: "SATA SSD", correct: true  },
+      { id: 2,  capacity: "2 TB",   iface: "SATA SSD", correct: true  },
+      { id: 3,  capacity: "1 TB",   iface: "SATA SSD", correct: false },
+      { id: 4,  capacity: "2 TB",   iface: "SATA HDD", correct: false },
+      { id: 5,  capacity: "4 TB",   iface: "SATA SSD", correct: false },
+      { id: 6,  capacity: "2 TB",   iface: "NVMe",     correct: false },
+      { id: 7,  capacity: "500 GB", iface: "SATA SSD", correct: false },
+      { id: 8,  capacity: "1 TB",   iface: "SATA HDD", correct: false },
+      { id: 9,  capacity: "8 TB",   iface: "SATA SSD", correct: false },
+    ],
+  },
+  {
+    id: 3,
+    title: "Web Application Server",
+    requirement:
+      "A startup needs balanced read performance, storage efficiency, and single-drive fault tolerance for their web server. Budget-conscious — cost-effective drives preferred.",
+    requiredCapacity: "2 TB",
+    requiredInterface: "SATA SSD",
+    correctRaid: "RAID 5",
+    storageEfficiency: "67%",
+    totalUsable: "4 TB",
+    faultTolerance: "1 drive",
+    explanation:
+      "RAID 5 stripes data with distributed parity across all 3 drives. Any single drive can fail and its data is rebuilt from the remaining two. Using identical 2 TB SATA SSDs ensures consistent performance and no wasted capacity. Mixing different capacities would force the array to use the smallest drive's capacity for each.",
+    drives: [
+      { id: 1, capacity: "2 TB",  iface: "SATA SSD", correct: true  },
+      { id: 2, capacity: "2 TB",  iface: "SATA SSD", correct: true  },
+      { id: 3, capacity: "2 TB",  iface: "SATA SSD", correct: true  },
+      { id: 4, capacity: "1 TB",   iface: "SATA SSD", correct: false },
+      { id: 5, capacity: "2 TB",   iface: "NVMe",     correct: false },
+      { id: 6, capacity: "4 TB",   iface: "SATA SSD", correct: false },
+      { id: 7, capacity: "2 TB",   iface: "SATA HDD", correct: false },
+      { id: 8, capacity: "500 GB", iface: "SATA SSD", correct: false },
+      { id: 9, capacity: "2 TB",   iface: "NVMe",     correct: false },
+    ],
+  },
+  {
+    id: 4,
+    title: "Financial Database Server",
+    requirement:
+      "A bank's transaction database must survive two simultaneous drive failures. High-capacity drives are required to handle IOPS-intensive workloads.",
+    requiredCapacity: "4 TB",
+    requiredInterface: "NVMe",
+    correctRaid: "RAID 6",
+    storageEfficiency: "50%",
+    totalUsable: "8 TB",
+    faultTolerance: "2 drives",
+    explanation:
+      "RAID 6 uses two independent parity blocks per stripe — any two drives can fail simultaneously without data loss, critical for financial systems. NVMe is required to sustain high IOPS under heavy transaction loads. All four drives must be identical 4 TB NVMe; mismatched capacities reduce usable space, mismatched interfaces create bottlenecks at the slower drive.",
+    drives: [
+      { id: 1, capacity: "4 TB",  iface: "NVMe",     correct: true  },
+      { id: 2, capacity: "4 TB",  iface: "NVMe",     correct: true  },
+      { id: 3, capacity: "4 TB",  iface: "NVMe",     correct: true  },
+      { id: 4, capacity: "4 TB",  iface: "NVMe",     correct: true  },
+      { id: 5, capacity: "2 TB",   iface: "NVMe",     correct: false },
+      { id: 6, capacity: "4 TB",   iface: "SATA SSD", correct: false },
+      { id: 7, capacity: "8 TB",   iface: "NVMe",     correct: false },
+      { id: 8, capacity: "4 TB",   iface: "SATA HDD", correct: false },
+      { id: 9, capacity: "1 TB",   iface: "NVMe",     correct: false },
+      { id: 10, capacity: "512 GB", iface: "NVMe",    correct: false },
+    ],
+  },
+  {
+    id: 5,
+    title: "Mission-Critical E-Commerce Platform",
+    requirement:
+      "An online retailer needs high throughput and redundancy for 24/7 uptime. The array must survive at least one failure per mirrored pair.",
+    requiredCapacity: "1 TB",
+    requiredInterface: "NVMe",
+    correctRaid: "RAID 10",
+    storageEfficiency: "50%",
+    totalUsable: "2 TB",
+    faultTolerance: "1 per mirror pair",
+    explanation:
+      "RAID 10 stripes across two mirrored NVMe pairs — delivering both read/write speed and redundancy. NVMe is essential for e-commerce peak-load performance. All four drives must be identical 1 TB NVMe; using different capacities would waste space on the larger drives, and mixing interfaces would limit the array to the slowest drive's throughput.",
+    drives: [
+      { id: 1, capacity: "1 TB",   iface: "NVMe",     correct: true  },
+      { id: 2, capacity: "1 TB",   iface: "NVMe",     correct: true  },
+      { id: 3, capacity: "1 TB",   iface: "NVMe",     correct: true  },
+      { id: 4, capacity: "1 TB",   iface: "NVMe",     correct: true  },
+      { id: 5, capacity: "2 TB",   iface: "NVMe",     correct: false },
+      { id: 6, capacity: "1 TB",   iface: "SATA SSD", correct: false },
+      { id: 7, capacity: "512 GB", iface: "NVMe",     correct: false },
+      { id: 8, capacity: "1 TB",   iface: "SATA HDD", correct: false },
+      { id: 9, capacity: "4 TB",   iface: "NVMe",     correct: false },
+      { id: 10, capacity: "256 GB", iface: "NVMe",     correct: false },
+    ],
+  },
+];
+
+export const RAID_OPTIONS = [
+  { level: "RAID 0",  name: "Striping",                    minDrives: 2 },
+  { level: "RAID 1",  name: "Mirroring",                   minDrives: 2 },
+  { level: "RAID 5",  name: "Striping with Parity",        minDrives: 3 },
+  { level: "RAID 6",  name: "Striping with Double Parity", minDrives: 4 },
+  { level: "RAID 10", name: "Stripe of Mirrors",           minDrives: 4 },
+];
