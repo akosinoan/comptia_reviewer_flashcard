@@ -38,6 +38,7 @@ export default function OSIPage() {
       <PageHeader
         title="OSI Model Drills"
         subtitle="Practice OSI layers for CompTIA Network+ (N10-009) — 9 interactive exercises"
+        hideExamToggle
       />
 
       {/* Exercise selector */}
