@@ -1,8 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useExam } from "@/context/ExamContext";
-import { ACRONYMS_CORE2 } from "@/data/acronymsCore2";
-import { ACRONYMS } from "@/data/acronymsCore1";
-import { ACRONYMS_NETPLUS } from "@/data/acronymsNetPlus";
+import { useSupabaseQuery } from "@/hooks/useSupabaseQuery";
+import { getAcronyms } from "@/services/acronymsService";
 
 function groupData(items) {
   const result = {};
@@ -17,17 +16,20 @@ function groupData(items) {
 
 export function useAcronyms() {
   const { exam } = useExam();
-  const activeAcronyms =
-    exam === "core2" ? ACRONYMS_CORE2 : exam === "netplus" ? ACRONYMS_NETPLUS : ACRONYMS;
-  const activeCategories = ["All", ...new Set(activeAcronyms.map((a) => a.category))];
+  const { data, loading, error } = useSupabaseQuery(
+    () => getAcronyms(exam),
+    [exam]
+  );
 
-  const [search, setSearch] = useState("");
+  const activeAcronyms = data ?? [];
+
+  const [search, setSearch]                   = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [collapsed, setCollapsed] = useState({});
-  const [hideAllDefs, setHideAllDefs] = useState(false);
-  const [hiddenRows, setHiddenRows] = useState({});
-  const [quizMode, setQuizMode] = useState(false);
-  const [quizAnswers, setQuizAnswers] = useState({});
+  const [collapsed, setCollapsed]             = useState({});
+  const [hideAllDefs, setHideAllDefs]         = useState(false);
+  const [hiddenRows, setHiddenRows]           = useState({});
+  const [quizMode, setQuizMode]               = useState(false);
+  const [quizAnswers, setQuizAnswers]         = useState({});
 
   useEffect(() => {
     setSelectedCategory("All");
@@ -47,7 +49,7 @@ export function useAcronyms() {
         a.definition.toLowerCase().includes(q);
       return matchesCategory && matchesSearch;
     });
-  }, [search, selectedCategory, exam]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [search, selectedCategory, activeAcronyms]);
 
   const grouped = useMemo(() => groupData(filtered), [filtered]);
   const isSearching = search.trim().length > 0;
@@ -77,7 +79,8 @@ export function useAcronyms() {
   const setQuizAnswer = (rowKey, value) =>
     setQuizAnswers((prev) => ({ ...prev, [rowKey]: value }));
 
-  const pillCategories = activeCategories.map((cat) => ({
+  const uniqueCategories = ["All", ...new Set(activeAcronyms.map((a) => a.category))];
+  const pillCategories = uniqueCategories.map((cat) => ({
     label: cat,
     count:
       cat === "All"
@@ -87,6 +90,8 @@ export function useAcronyms() {
 
   return {
     exam,
+    loading,
+    error,
     activeAcronyms,
     filtered,
     grouped,

@@ -3,27 +3,39 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle2, XCircle, RotateCcw } from "lucide-react";
 import { useExam } from "@/context/ExamContext";
 import PageHeader from "@/components/shared/PageHeader";
+import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import ScenarioRequirements from "@/components/pcbuilder/ScenarioRequirements";
 import ComponentCategory from "@/components/pcbuilder/ComponentCategory";
-import { SCENARIOS_CORE2 } from "@/data/pcBuilderCore2";
-import { SCENARIOS } from "@/data/pcBuilderCore1";
+import { useSupabaseQuery } from "@/hooks/useSupabaseQuery";
+import { getPCBuilderScenarios } from "@/services/pcBuilderService";
 
 export default function PCBuilderPage() {
   const { exam } = useExam();
-  const activeScenarios = exam === "core2" ? SCENARIOS_CORE2 : SCENARIOS;
+  const { data: activeScenarios, loading, error } = useSupabaseQuery(
+    () => getPCBuilderScenarios(exam),
+    [exam]
+  );
 
-  const [activeTab, setActiveTab]   = useState(activeScenarios[0].id);
+  const [activeTab, setActiveTab]   = useState(null);
   const [selections, setSelections] = useState({});
   const [submitted, setSubmitted]   = useState({});
   const [showReqs, setShowReqs]     = useState(true);
 
+  // Set the initial active tab once data arrives
   useEffect(() => {
+    if (!activeScenarios || activeScenarios.length === 0) return;
     setActiveTab(activeScenarios[0].id);
     setSelections({});
     setSubmitted({});
-  }, [exam, activeScenarios]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [activeScenarios]);
 
-  const scenario    = activeScenarios.find((s) => s.id === activeTab) ?? activeScenarios[0];
+  if (loading) return <LoadingSpinner message="Loading scenarios…" />;
+  if (error)   return <LoadingSpinner message="Failed to load scenarios. Check your connection." />;
+
+  const scenarios = activeScenarios ?? [];
+  const scenario  = scenarios.find((s) => s.id === activeTab) ?? scenarios[0];
+  if (!scenario)  return null;
+
   const key         = (scenId, catId) => `${scenId}-${catId}`;
   const isSubmitted = submitted[activeTab];
 
@@ -80,7 +92,7 @@ export default function PCBuilderPage() {
 
       {/* Tab buttons */}
       <div className="flex flex-wrap gap-2 mb-6">
-        {activeScenarios.map((s) => (
+        {scenarios.map((s) => (
           <button
             key={s.id}
             onClick={() => setActiveTab(s.id)}

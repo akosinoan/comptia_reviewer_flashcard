@@ -5,34 +5,42 @@ import { useExam } from "@/context/ExamContext";
 import PageHeader from "@/components/shared/PageHeader";
 import PageNav from "@/components/shared/PageNav";
 import ExplanationPanel from "@/components/shared/ExplanationPanel";
+import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import MatchPBQ from "@/components/pbq/MatchPBQ";
 import BucketPBQ from "@/components/pbq/BucketPBQ";
 import OrderPBQ from "@/components/pbq/OrderPBQ";
 import { shuffle } from "@/utils/shuffle";
-import { PBQs_CORE2 } from "@/data/pbqCore2";
-import { PBQs } from "@/data/pbqCore1";
-import { PBQs_NETPLUS } from "@/data/pbqNetPlus";
+import { useSupabaseQuery } from "@/hooks/useSupabaseQuery";
+import { getPBQs } from "@/services/pbqService";
 
 export default function PBQPage() {
   const { exam } = useExam();
-  const activePBQs =
-    exam === "core2" ? PBQs_CORE2 : exam === "netplus" ? PBQs_NETPLUS : PBQs;
+  const { data: activePBQs, loading, error } = useSupabaseQuery(
+    () => getPBQs(exam),
+    [exam]
+  );
 
-  const [pbqOrder, setPbqOrder]               = useState(() => activePBQs.map((_, i) => i));
+  const [pbqOrder, setPbqOrder]               = useState([]);
   const [pbqIndex, setPbqIndex]               = useState(0);
   const [showExplanation, setShowExplanation] = useState(false);
   const [showAnswer, setShowAnswer]           = useState(false);
   const [subKey, setSubKey]                   = useState(0);
 
+  // Reset order and index whenever data arrives (exam change or initial load)
   useEffect(() => {
+    if (!activePBQs) return;
     setPbqOrder(activePBQs.map((_, i) => i));
     setPbqIndex(0);
     setShowExplanation(false);
     setShowAnswer(false);
     setSubKey((k) => k + 1);
-  }, [exam]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [activePBQs]);
 
-  const pbq = activePBQs[pbqOrder[pbqIndex]];
+  if (loading) return <LoadingSpinner message="Loading questions…" />;
+  if (error)   return <LoadingSpinner message="Failed to load questions. Check your connection." />;
+
+  const pbqs = activePBQs ?? [];
+  const pbq  = pbqs[pbqOrder[pbqIndex]];
 
   const goTo = (i) => {
     setPbqIndex(i);
@@ -56,61 +64,65 @@ export default function PBQPage() {
 
       <PageNav
         current={pbqIndex}
-        total={activePBQs.length}
+        total={pbqs.length}
         label="Question"
         onPrev={() => goTo(pbqIndex - 1)}
         onNext={() => goTo(pbqIndex + 1)}
         onShuffle={() => {
-          setPbqOrder(shuffle(activePBQs.map((_, i) => i)));
+          setPbqOrder(shuffle(pbqs.map((_, i) => i)));
           goTo(0);
         }}
       />
 
-      <div className="rounded-lg border bg-muted/20 p-4 mb-6">
-        <div className="flex items-center gap-2 mb-1">
-          <span className="text-xs font-semibold text-primary uppercase tracking-wide">
-            {pbq.title}
-          </span>
-          <span className="text-xs text-muted-foreground">· {pbq.domain}</span>
-        </div>
-        <p className="text-sm leading-relaxed">{pbq.question}</p>
-      </div>
+      {pbq && (
+        <>
+          <div className="rounded-lg border bg-muted/20 p-4 mb-6">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-xs font-semibold text-primary uppercase tracking-wide">
+                {pbq.title}
+              </span>
+              <span className="text-xs text-muted-foreground">· {pbq.domain}</span>
+            </div>
+            <p className="text-sm leading-relaxed">{pbq.question}</p>
+          </div>
 
-      <div key={subKey}>
-        {pbq.type === "match"  && <MatchPBQ  pbq={pbq} showAnswer={showAnswer} />}
-        {pbq.type === "bucket" && <BucketPBQ pbq={pbq} showAnswer={showAnswer} />}
-        {pbq.type === "order"  && <OrderPBQ  pbq={pbq} showAnswer={showAnswer} />}
-      </div>
+          <div key={subKey}>
+            {pbq.type === "match"  && <MatchPBQ  pbq={pbq} showAnswer={showAnswer} />}
+            {pbq.type === "bucket" && <BucketPBQ pbq={pbq} showAnswer={showAnswer} />}
+            {pbq.type === "order"  && <OrderPBQ  pbq={pbq} showAnswer={showAnswer} />}
+          </div>
 
-      <div className="mt-6 flex flex-wrap gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setShowAnswer((v) => !v)}
-          className="gap-1.5"
-        >
-          <Eye className="h-4 w-4" />
-          {showAnswer ? "Hide" : "Show"} Answer
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setShowExplanation((v) => !v)}
-          className="gap-1.5"
-        >
-          <BookOpen className="h-4 w-4" />
-          {showExplanation ? "Hide" : "Show"} Explanation
-        </Button>
-      </div>
+          <div className="mt-6 flex flex-wrap gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowAnswer((v) => !v)}
+              className="gap-1.5"
+            >
+              <Eye className="h-4 w-4" />
+              {showAnswer ? "Hide" : "Show"} Answer
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowExplanation((v) => !v)}
+              className="gap-1.5"
+            >
+              <BookOpen className="h-4 w-4" />
+              {showExplanation ? "Hide" : "Show"} Explanation
+            </Button>
+          </div>
 
-      {showExplanation && (
-        <div className="mt-3">
-          <ExplanationPanel>
-            <pre className="text-sm leading-relaxed whitespace-pre-wrap font-sans">
-              {pbq.explanation}
-            </pre>
-          </ExplanationPanel>
-        </div>
+          {showExplanation && (
+            <div className="mt-3">
+              <ExplanationPanel>
+                <pre className="text-sm leading-relaxed whitespace-pre-wrap font-sans">
+                  {pbq.explanation}
+                </pre>
+              </ExplanationPanel>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

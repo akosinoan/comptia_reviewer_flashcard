@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   HardDrive,
@@ -11,25 +11,43 @@ import { useExam } from "@/context/ExamContext";
 import PageHeader from "@/components/shared/PageHeader";
 import PageNav from "@/components/shared/PageNav";
 import ExplanationPanel from "@/components/shared/ExplanationPanel";
+import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import DriveCard from "@/components/raid/DriveCard";
 import RAIDDiagram from "@/components/raid/RAIDDiagram";
 import { getBayLabel, getBayAccent, getLabelColor, getIfaceStyle } from "@/components/raid/raidUtils";
 import { shuffle } from "@/utils/shuffle";
-import { SCENARIOS, RAID_OPTIONS } from "@/data/raidCore1";
+import { RAID_OPTIONS } from "@/data/raidCore1";
+import { useSupabaseQuery } from "@/hooks/useSupabaseQuery";
+import { getRaidScenarios } from "@/services/raidService";
 
 export default function RAIDPage() {
   const { exam } = useExam();
-  const [order, setOrder] = useState(() => shuffle(SCENARIOS.map((_, i) => i)));
+  const { data: scenarios, loading, error } = useSupabaseQuery(getRaidScenarios, []);
+
+  const [order, setOrder]               = useState([]);
   const [scenarioIndex, setScenarioIndex] = useState(0);
-  const [selectedRaid, setSelectedRaid]   = useState(null);
-  const [bays, setBays]                   = useState([]);
-  const [dragging, setDragging]           = useState(null);
-  const [dragOverBay, setDragOverBay]     = useState(null);
-  const [checked, setChecked]             = useState(false);
+  const [selectedRaid, setSelectedRaid] = useState(null);
+  const [bays, setBays]                 = useState([]);
+  const [dragging, setDragging]         = useState(null);
+  const [dragOverBay, setDragOverBay]   = useState(null);
+  const [checked, setChecked]           = useState(false);
   const [showExplanation, setShowExplanation] = useState(false);
 
-  const scenario = SCENARIOS[order[scenarioIndex]];
-  const placedIds = new Set(bays.filter(Boolean));
+  // Initialise order once data arrives
+  useEffect(() => {
+    if (!scenarios) return;
+    setOrder(shuffle(scenarios.map((_, i) => i)));
+    setScenarioIndex(0);
+  }, [scenarios]);
+
+  if (loading) return <LoadingSpinner message="Loading RAID scenarios…" />;
+  if (error)   return <LoadingSpinner message="Failed to load scenarios. Check your connection." />;
+
+  const SCENARIOS = scenarios ?? [];
+  const scenario  = SCENARIOS[order[scenarioIndex]];
+  if (!scenario)  return null;
+
+  const placedIds  = new Set(bays.filter(Boolean));
   const poolDrives = scenario.drives.filter((d) => !placedIds.has(d.id));
   const allBaysFilled = bays.length > 0 && bays.every((b) => b !== null);
 

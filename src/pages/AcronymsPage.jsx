@@ -5,10 +5,13 @@ import SearchInput from "@/components/shared/SearchInput";
 import CategoryPills from "@/components/shared/CategoryPills";
 import AcronymSubcategory from "@/components/acronyms/AcronymSubcategory";
 import { useAcronyms } from "@/hooks/useAcronyms";
+import LoadingSpinner from "@/components/shared/LoadingSpinner";
 
 export default function AcronymsPage() {
   const {
     exam,
+    loading,
+    error,
     activeAcronyms,
     filtered,
     grouped,
@@ -29,6 +32,9 @@ export default function AcronymsPage() {
     toggleHideAll,
     toggleQuizMode,
   } = useAcronyms();
+
+  if (loading) return <LoadingSpinner message="Loading acronyms…" />;
+  if (error) return <LoadingSpinner message="Failed to load acronyms. Check your connection." />;
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">

@@ -10,6 +10,7 @@ import PBQPage from "./pages/PBQPage";
 import PCBuilderPage from "./pages/PCBuilderPage";
 import CommandsPage from "./pages/CommandsPage";
 import SubnetPage from "./pages/SubnetPage";
+import OSIPage from "./pages/OSIPage";
 import { ExamProvider } from "./context/ExamContext";
 
 export default function App() {
@@ -49,6 +50,7 @@ export default function App() {
             <Route path="/pcbuilder" element={<PCBuilderPage />} />
             <Route path="/commands" element={<CommandsPage />} />
             <Route path="/subnet"   element={<SubnetPage />} />
+            <Route path="/osi"     element={<OSIPage />} />
           </Routes>
         </main>
       </div>

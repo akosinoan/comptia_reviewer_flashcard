@@ -1,26 +1,29 @@
 import { useState, useEffect } from "react";
 import { useExam } from "@/context/ExamContext";
+import { useSupabaseQuery } from "@/hooks/useSupabaseQuery";
 import { shuffle } from "@/utils/shuffle";
-import { PORTS_CORE2 } from "@/data/portsCore2";
-import { PORTS_CORE1 as ALL_PORTS } from "@/data/portsCore1";
-import { PORTS_NETPLUS } from "@/data/portsNetPlus";
+import { getPorts } from "@/services/portsService";
 
 export function usePortMatching() {
   const { exam } = useExam();
-  const activePorts =
-    exam === "core2" ? PORTS_CORE2 : exam === "netplus" ? PORTS_NETPLUS : ALL_PORTS;
+  const { data: activePorts, loading, error } = useSupabaseQuery(
+    () => getPorts(exam),
+    [exam]
+  );
 
-  const [shuffledPorts, setShuffledPorts] = useState(() => [...activePorts]);
-  const [shuffledNames, setShuffledNames] = useState(() => shuffle(activePorts));
+  const [shuffledPorts, setShuffledPorts]   = useState([]);
+  const [shuffledNames, setShuffledNames]   = useState([]);
   const [selectedPortId, setSelectedPortId] = useState(null);
-  const [matched, setMatched] = useState({});
-  const [wrong, setWrong] = useState(null);
-  const [attempts, setAttempts] = useState(0);
-  const [quizMode, setQuizMode] = useState(false);
-  const [quizAnswers, setQuizAnswers] = useState({});
-  const [quizOrder, setQuizOrder] = useState(() => [...activePorts]);
+  const [matched, setMatched]               = useState({});
+  const [wrong, setWrong]                   = useState(null);
+  const [attempts, setAttempts]             = useState(0);
+  const [quizMode, setQuizMode]             = useState(false);
+  const [quizAnswers, setQuizAnswers]       = useState({});
+  const [quizOrder, setQuizOrder]           = useState([]);
 
+  // Reinitialize game state whenever data arrives or exam changes
   useEffect(() => {
+    if (!activePorts) return;
     setShuffledPorts([...activePorts]);
     setShuffledNames(shuffle(activePorts));
     setSelectedPortId(null);
@@ -29,15 +32,16 @@ export function usePortMatching() {
     setAttempts(0);
     setQuizAnswers({});
     setQuizOrder([...activePorts]);
-  }, [exam]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [activePorts]);
 
+  const ports = activePorts ?? [];
   const matchedCount = Object.keys(matched).length;
-  const allMatched = matchedCount === activePorts.length;
-  const accuracy = attempts > 0 ? Math.round((matchedCount / attempts) * 100) : null;
+  const allMatched   = ports.length > 0 && matchedCount === ports.length;
+  const accuracy     = attempts > 0 ? Math.round((matchedCount / attempts) * 100) : null;
 
   const reset = () => {
-    setShuffledPorts([...activePorts]);
-    setShuffledNames(shuffle(activePorts));
+    setShuffledPorts([...ports]);
+    setShuffledNames(shuffle(ports));
     setSelectedPortId(null);
     setMatched({});
     setWrong(null);
@@ -67,12 +71,14 @@ export function usePortMatching() {
   const toggleQuizMode = () => {
     setQuizMode((v) => !v);
     setQuizAnswers({});
-    setQuizOrder([...activePorts]);
+    setQuizOrder([...ports]);
   };
 
   return {
     exam,
-    activePorts,
+    loading,
+    error,
+    activePorts: ports,
     shuffledPorts,
     shuffledNames,
     selectedPortId,

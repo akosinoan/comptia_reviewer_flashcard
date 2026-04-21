@@ -12,6 +12,7 @@ const NAV_LINKS = [
   { to: "/pcbuilder", label: "PC Builder" },
   { to: "/commands",  label: "Commands" },
   { to: "/subnet",    label: "Subnetting" },
+  { to: "/osi",       label: "OSI Layers" },
 ];
 
 export default function Navbar({ theme, onToggle }) {

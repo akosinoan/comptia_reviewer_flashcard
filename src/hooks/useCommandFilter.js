@@ -1,37 +1,45 @@
 import { useState, useMemo, useEffect } from "react";
 import { useExam } from "@/context/ExamContext";
-import { COMMANDS_CORE2, COMMAND_CATEGORIES } from "@/data/commandsCore2";
-import { COMMANDS_NETPLUS, COMMAND_CATEGORIES_NETPLUS } from "@/data/commandsNetPlus";
+import { useSupabaseQuery } from "@/hooks/useSupabaseQuery";
+import { getCommands } from "@/services/commandsService";
 
 export function useCommandFilter() {
   const { exam } = useExam();
-  const activeCommands = exam === "netplus" ? COMMANDS_NETPLUS : COMMANDS_CORE2;
-  const activeCategories = exam === "netplus" ? COMMAND_CATEGORIES_NETPLUS : COMMAND_CATEGORIES;
-
-  const [searchTerm, setSearchTerm] = useState("");
-  const [expandedCategories, setExpandedCategories] = useState(
-    () => new Set(activeCategories)
+  // Commands only exist for core2 and netplus; core1 falls back to core2
+  const dbExam = exam === "netplus" ? "netplus" : "core2";
+  const { data, loading, error } = useSupabaseQuery(
+    () => getCommands(dbExam),
+    [dbExam]
   );
 
+  const activeCommands = data ?? [];
+
+  // Derive category list in first-appearance order
+  const activeCategories = [...new Set(activeCommands.map((c) => c.category))];
+
+  const [searchTerm, setSearchTerm]           = useState("");
+  const [expandedCategories, setExpandedCategories] = useState(() => new Set());
+
+  // Expand all categories whenever data or exam changes
   useEffect(() => {
     setSearchTerm("");
     setExpandedCategories(new Set(activeCategories));
-  }, [exam]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [data]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const filtered = useMemo(() => {
     const q = searchTerm.trim().toLowerCase();
     if (!q) return activeCommands;
     return activeCommands.filter(
       (c) =>
-        c.windows.cmd.toLowerCase().includes(q) ||
-        c.windows.description.toLowerCase().includes(q) ||
-        c.windows.example.toLowerCase().includes(q) ||
-        c.linux.cmd.toLowerCase().includes(q) ||
-        c.linux.description.toLowerCase().includes(q) ||
-        c.linux.example.toLowerCase().includes(q) ||
+        c.windows?.cmd?.toLowerCase().includes(q) ||
+        c.windows?.description?.toLowerCase().includes(q) ||
+        c.windows?.example?.toLowerCase().includes(q) ||
+        c.linux?.cmd?.toLowerCase().includes(q) ||
+        c.linux?.description?.toLowerCase().includes(q) ||
+        c.linux?.example?.toLowerCase().includes(q) ||
         c.category.toLowerCase().includes(q)
     );
-  }, [searchTerm, activeCommands]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [searchTerm, activeCommands]);
 
   const grouped = useMemo(() => {
     const map = new Map();
@@ -59,6 +67,8 @@ export function useCommandFilter() {
   };
 
   return {
+    loading,
+    error,
     searchTerm,
     filtered,
     grouped,

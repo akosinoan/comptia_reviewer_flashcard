@@ -1,20 +1,19 @@
 import { useState, useCallback, useEffect } from "react";
-import { questions, categories } from "@/data/questions";
-import { questionsCore2, categoriesCore2 } from "@/data/questionsCore2";
-import { questionsNetPlus, categoriesNetPlus } from "@/data/questionsNetPlus";
 import { useExam } from "@/context/ExamContext";
+import { useSupabaseQuery } from "@/hooks/useSupabaseQuery";
+import { getQuestions } from "@/services/questionsService";
 
 export function useStudyCards() {
   const { exam } = useExam();
-  const activeQuestions =
-    exam === "core2" ? questionsCore2 : exam === "netplus" ? questionsNetPlus : questions;
-  const activeCategories =
-    exam === "core2" ? categoriesCore2 : exam === "netplus" ? categoriesNetPlus : categories;
+  const { data: activeQuestions, loading, error } = useSupabaseQuery(
+    () => getQuestions(exam),
+    [exam]
+  );
 
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [showBothSides, setShowBothSides] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [cardKey, setCardKey] = useState(0);
+  const [showBothSides, setShowBothSides]         = useState(false);
+  const [currentIndex, setCurrentIndex]           = useState(0);
+  const [cardKey, setCardKey]                     = useState(0);
 
   useEffect(() => {
     setSelectedCategory("All");
@@ -22,10 +21,12 @@ export function useStudyCards() {
     setCardKey((k) => k + 1);
   }, [exam]);
 
+  const questions = activeQuestions ?? [];
+
   const filteredCards =
     selectedCategory === "All"
-      ? activeQuestions
-      : activeQuestions.filter((q) => q.category === selectedCategory);
+      ? questions
+      : questions.filter((q) => q.category === selectedCategory);
 
   const currentCard = filteredCards[currentIndex];
   const progress =
@@ -59,16 +60,20 @@ export function useStudyCards() {
     bumpKey();
   };
 
+  // Derive categories in first-appearance order — same logic as the old static export
+  const uniqueCategories = [...new Set(questions.map((q) => q.category))];
   const pillCategories = [
-    { label: "All", count: activeQuestions.length },
-    ...activeCategories.map((cat) => ({
+    { label: "All", count: questions.length },
+    ...uniqueCategories.map((cat) => ({
       label: cat,
-      count: activeQuestions.filter((q) => q.category === cat).length,
+      count: questions.filter((q) => q.category === cat).length,
     })),
   ];
 
   return {
     exam,
+    loading,
+    error,
     filteredCards,
     currentCard,
     currentIndex,

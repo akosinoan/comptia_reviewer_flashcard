@@ -1,5 +1,6 @@
 import { useStudyCards } from "@/hooks/useStudyCards";
 import PageHeader from "@/components/shared/PageHeader";
+import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import CategoryPills from "@/components/shared/CategoryPills";
 import FlashCard from "@/components/FlashCard";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,8 @@ import {
 export default function StudyPage() {
   const {
     exam,
+    loading,
+    error,
     filteredCards,
     currentCard,
     currentIndex,
@@ -33,6 +36,9 @@ export default function StudyPage() {
     handleReset,
     handleCategoryFilter,
   } = useStudyCards();
+
+  if (loading) return <LoadingSpinner message="Loading flashcards…" />;
+  if (error) return <LoadingSpinner message="Failed to load flashcards. Check your connection." />;
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl">

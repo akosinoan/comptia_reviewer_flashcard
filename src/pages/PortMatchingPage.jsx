@@ -6,10 +6,13 @@ import PageHeader from "@/components/shared/PageHeader";
 import PortMatchingGrid from "@/components/ports/PortMatchingGrid";
 import PortQuizTable from "@/components/ports/PortQuizTable";
 import { usePortMatching } from "@/hooks/usePortMatching";
+import LoadingSpinner from "@/components/shared/LoadingSpinner";
 
 export default function PortMatchingPage() {
   const {
     exam,
+    loading,
+    error,
     activePorts,
     shuffledPorts,
     shuffledNames,
@@ -32,6 +35,9 @@ export default function PortMatchingPage() {
     handleNameClick,
     toggleQuizMode,
   } = usePortMatching();
+
+  if (loading) return <LoadingSpinner message="Loading ports…" />;
+  if (error) return <LoadingSpinner message="Failed to load ports. Check your connection." />;
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">

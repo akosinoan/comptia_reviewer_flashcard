@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm create:*)"
+      "Bash(npm create:*)",
+      "Bash(curl -s http://localhost:5174/comptia_reviewer_flashcard/)"
     ]
   }
 }

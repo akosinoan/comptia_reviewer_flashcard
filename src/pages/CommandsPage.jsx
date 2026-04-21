@@ -3,10 +3,13 @@ import SearchInput from "@/components/shared/SearchInput";
 import CommandCategory from "@/components/commands/CommandCategory";
 import { useCommandFilter } from "@/hooks/useCommandFilter";
 import { useExam } from "@/context/ExamContext";
+import LoadingSpinner from "@/components/shared/LoadingSpinner";
 
 export default function CommandsPage() {
   const { exam } = useExam();
   const {
+    loading,
+    error,
     searchTerm,
     filtered,
     grouped,
@@ -16,6 +19,9 @@ export default function CommandsPage() {
     toggleCategory,
     toggleAll,
   } = useCommandFilter();
+
+  if (loading) return <LoadingSpinner message="Loading commands…" />;
+  if (error) return <LoadingSpinner message="Failed to load commands. Check your connection." />;
 
   const subtitle =
     exam === "netplus"
