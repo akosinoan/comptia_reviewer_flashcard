@@ -29,7 +29,7 @@ export default function Navbar({ theme, onToggle }) {
           onClick={() => setOpen(false)}
         >
           <BookOpen className="h-6 w-6 text-primary" />
-          <span>CompTIA A+ Reviewer</span>
+          <span>CompTIA Reviewer</span>
         </Link>
 
         {/* Desktop links */}
