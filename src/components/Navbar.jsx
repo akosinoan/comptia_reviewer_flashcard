@@ -11,6 +11,7 @@ const NAV_LINKS = [
   { to: "/pbq",       label: "PBQ" },
   { to: "/pcbuilder", label: "PC Builder" },
   { to: "/commands",  label: "Commands" },
+  { to: "/subnet",    label: "Subnetting" },
 ];
 
 export default function Navbar({ theme, onToggle }) {
