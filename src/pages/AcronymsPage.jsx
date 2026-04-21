@@ -37,6 +37,8 @@ export default function AcronymsPage() {
         subtitle={
           exam === "core2"
             ? `CompTIA A+ Core 2 (220-1202) — ${activeAcronyms.length} acronyms`
+            : exam === "netplus"
+            ? `CompTIA Network+ (N10-009) — ${activeAcronyms.length} acronyms`
             : `CompTIA A+ Core 1 (220-1201) — ${activeAcronyms.length} acronyms`
         }
       />

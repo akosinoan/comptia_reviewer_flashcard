@@ -1,16 +1,27 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useExam } from "@/context/ExamContext";
 import { COMMANDS_CORE2, COMMAND_CATEGORIES } from "@/data/commandsCore2";
+import { COMMANDS_NETPLUS, COMMAND_CATEGORIES_NETPLUS } from "@/data/commandsNetPlus";
 
 export function useCommandFilter() {
+  const { exam } = useExam();
+  const activeCommands = exam === "netplus" ? COMMANDS_NETPLUS : COMMANDS_CORE2;
+  const activeCategories = exam === "netplus" ? COMMAND_CATEGORIES_NETPLUS : COMMAND_CATEGORIES;
+
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedCategories, setExpandedCategories] = useState(
-    () => new Set(COMMAND_CATEGORIES)
+    () => new Set(activeCategories)
   );
+
+  useEffect(() => {
+    setSearchTerm("");
+    setExpandedCategories(new Set(activeCategories));
+  }, [exam]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const filtered = useMemo(() => {
     const q = searchTerm.trim().toLowerCase();
-    if (!q) return COMMANDS_CORE2;
-    return COMMANDS_CORE2.filter(
+    if (!q) return activeCommands;
+    return activeCommands.filter(
       (c) =>
         c.windows.cmd.toLowerCase().includes(q) ||
         c.windows.description.toLowerCase().includes(q) ||
@@ -20,7 +31,7 @@ export function useCommandFilter() {
         c.linux.example.toLowerCase().includes(q) ||
         c.category.toLowerCase().includes(q)
     );
-  }, [searchTerm]);
+  }, [searchTerm, activeCommands]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const grouped = useMemo(() => {
     const map = new Map();

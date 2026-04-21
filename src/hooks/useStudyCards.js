@@ -1,12 +1,15 @@
 import { useState, useCallback, useEffect } from "react";
 import { questions, categories } from "@/data/questions";
 import { questionsCore2, categoriesCore2 } from "@/data/questionsCore2";
+import { questionsNetPlus, categoriesNetPlus } from "@/data/questionsNetPlus";
 import { useExam } from "@/context/ExamContext";
 
 export function useStudyCards() {
   const { exam } = useExam();
-  const activeQuestions = exam === "core2" ? questionsCore2 : questions;
-  const activeCategories = exam === "core2" ? categoriesCore2 : categories;
+  const activeQuestions =
+    exam === "core2" ? questionsCore2 : exam === "netplus" ? questionsNetPlus : questions;
+  const activeCategories =
+    exam === "core2" ? categoriesCore2 : exam === "netplus" ? categoriesNetPlus : categories;
 
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [showBothSides, setShowBothSides] = useState(false);

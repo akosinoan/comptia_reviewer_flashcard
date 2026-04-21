@@ -21,7 +21,7 @@ export default function PCBuilderPage() {
     setActiveTab(activeScenarios[0].id);
     setSelections({});
     setSubmitted({});
-  }, [exam]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [exam, activeScenarios]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const scenario    = activeScenarios.find((s) => s.id === activeTab) ?? activeScenarios[0];
   const key         = (scenId, catId) => `${scenId}-${catId}`;
@@ -70,6 +70,13 @@ export default function PCBuilderPage() {
             : "Select the best component for each category based on the scenario requirements."
         }
       />
+
+      {exam === "netplus" && (
+        <div className="mb-4 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-sm text-amber-700 dark:text-amber-400">
+          PC Builder is a <strong>Core 1 (220-1201)</strong> Hardware topic. It is not directly
+          tested on Network+, but practicing hardware selection reinforces foundational knowledge.
+        </div>
+      )}
 
       {/* Tab buttons */}
       <div className="flex flex-wrap gap-2 mb-6">

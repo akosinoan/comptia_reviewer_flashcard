@@ -3,10 +3,12 @@ import { useExam } from "@/context/ExamContext";
 import { shuffle } from "@/utils/shuffle";
 import { PORTS_CORE2 } from "@/data/portsCore2";
 import { PORTS_CORE1 as ALL_PORTS } from "@/data/portsCore1";
+import { PORTS_NETPLUS } from "@/data/portsNetPlus";
 
 export function usePortMatching() {
   const { exam } = useExam();
-  const activePorts = exam === "core2" ? PORTS_CORE2 : ALL_PORTS;
+  const activePorts =
+    exam === "core2" ? PORTS_CORE2 : exam === "netplus" ? PORTS_NETPLUS : ALL_PORTS;
 
   const [shuffledPorts, setShuffledPorts] = useState(() => [...activePorts]);
   const [shuffledNames, setShuffledNames] = useState(() => shuffle(activePorts));

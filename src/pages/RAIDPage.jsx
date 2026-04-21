@@ -123,10 +123,11 @@ export default function RAIDPage() {
         }
       />
 
-      {exam === "core2" && (
+      {(exam === "core2" || exam === "netplus") && (
         <div className="mb-4 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-sm text-amber-700 dark:text-amber-400">
           RAID configuration is a <strong>Core 1 (220-1201)</strong> topic under Hardware. It is
-          not directly tested on Core 2, but practicing it reinforces your overall A+ knowledge.
+          not directly tested on {exam === "netplus" ? "Network+" : "Core 2"}, but practicing it
+          reinforces your overall knowledge.
         </div>
       )}
 

@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import { useExam } from "@/context/ExamContext";
 import { ACRONYMS_CORE2 } from "@/data/acronymsCore2";
 import { ACRONYMS } from "@/data/acronymsCore1";
+import { ACRONYMS_NETPLUS } from "@/data/acronymsNetPlus";
 
 function groupData(items) {
   const result = {};
@@ -16,7 +17,8 @@ function groupData(items) {
 
 export function useAcronyms() {
   const { exam } = useExam();
-  const activeAcronyms = exam === "core2" ? ACRONYMS_CORE2 : ACRONYMS;
+  const activeAcronyms =
+    exam === "core2" ? ACRONYMS_CORE2 : exam === "netplus" ? ACRONYMS_NETPLUS : ACRONYMS;
   const activeCategories = ["All", ...new Set(activeAcronyms.map((a) => a.category))];
 
   const [search, setSearch] = useState("");

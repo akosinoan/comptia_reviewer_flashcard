@@ -41,6 +41,8 @@ export default function StudyPage() {
         subtitle={
           exam === "core2"
             ? "CompTIA A+ Core 2 (220-1202)"
+            : exam === "netplus"
+            ? "CompTIA Network+ (N10-009)"
             : "CompTIA A+ Core 1 (220-1201)"
         }
       />

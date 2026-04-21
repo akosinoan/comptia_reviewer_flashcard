@@ -11,10 +11,12 @@ import OrderPBQ from "@/components/pbq/OrderPBQ";
 import { shuffle } from "@/utils/shuffle";
 import { PBQs_CORE2 } from "@/data/pbqCore2";
 import { PBQs } from "@/data/pbqCore1";
+import { PBQs_NETPLUS } from "@/data/pbqNetPlus";
 
 export default function PBQPage() {
   const { exam } = useExam();
-  const activePBQs = exam === "core2" ? PBQs_CORE2 : PBQs;
+  const activePBQs =
+    exam === "core2" ? PBQs_CORE2 : exam === "netplus" ? PBQs_NETPLUS : PBQs;
 
   const [pbqOrder, setPbqOrder]               = useState(() => activePBQs.map((_, i) => i));
   const [pbqIndex, setPbqIndex]               = useState(0);
@@ -46,6 +48,8 @@ export default function PBQPage() {
         subtitle={
           exam === "core2"
             ? "Interactive scenarios for CompTIA A+ Core 2 (220-1202)"
+            : exam === "netplus"
+            ? "Interactive scenarios for CompTIA Network+ (N10-009)"
             : "Interactive scenarios for CompTIA A+ Core 1 (220-1201)"
         }
       />

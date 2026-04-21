@@ -27,6 +27,17 @@ export default function ExamToggle() {
         Core 2
         <span className="ml-1.5 text-xs opacity-70">220-1202</span>
       </button>
+      <button
+        onClick={() => setExam("netplus")}
+        className={`px-4 py-1.5 rounded-md text-sm font-semibold transition-all ${
+          exam === "netplus"
+            ? "bg-primary text-primary-foreground shadow-sm"
+            : "text-muted-foreground hover:text-foreground"
+        }`}
+      >
+        Network+
+        <span className="ml-1.5 text-xs opacity-70">N10-009</span>
+      </button>
     </div>
   );
 }

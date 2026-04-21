@@ -40,6 +40,8 @@ export default function PortMatchingPage() {
         subtitle={
           exam === "core2"
             ? "Security & OS administration ports — Core 2 (220-1202)"
+            : exam === "netplus"
+            ? "Network+ (N10-009) ports — match each port to its protocol and service"
             : "Match each port number to its protocol and service name"
         }
       />
