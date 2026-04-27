@@ -31,6 +31,8 @@ export default function AcronymsPage() {
     isDefHidden,
     toggleHideAll,
     toggleQuizMode,
+    toggleExpanded,
+    isExpanded,
   } = useAcronyms();
 
   if (loading) return <LoadingSpinner message="Loading acronyms…" />;
@@ -44,7 +46,7 @@ export default function AcronymsPage() {
           exam === "core2"
             ? `CompTIA A+ Core 2 (220-1202) — ${activeAcronyms.length} acronyms`
             : exam === "netplus"
-            ? `CompTIA Network+ (N10-009) — ${activeAcronyms.length} acronyms`
+            ? `CompTIA Network+ (N10-009) — ${activeAcronyms.length} terms & concepts`
             : `CompTIA A+ Core 1 (220-1201) — ${activeAcronyms.length} acronyms`
         }
       />
@@ -117,8 +119,10 @@ export default function AcronymsPage() {
                     isDefHidden={isDefHidden}
                     quizMode={quizMode}
                     quizAnswers={quizAnswers}
+                    isExpanded={isExpanded}
                     onToggle={() => toggleSubcategory(key)}
                     onToggleRow={toggleRow}
+                    onToggleExpanded={toggleExpanded}
                     onQuizAnswerChange={setQuizAnswer}
                   />
                 );

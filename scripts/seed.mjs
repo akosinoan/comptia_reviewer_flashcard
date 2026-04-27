@@ -75,7 +75,7 @@ async function seedQuestions() {
 }
 
 async function seedAcronyms() {
-  // Use a synthetic id based on exam + index since acronyms have no natural id
+  // Use a synthetic id based on exam + index since acronyms have no natural id.
   const rows = [
     ...ACRONYMS.map((a, i)          => ({ ...a, id: i + 1,                   exam: "core1" })),
     ...ACRONYMS_CORE2.map((a, i)    => ({ ...a, id: ACRONYMS.length + i + 1, exam: "core2" })),

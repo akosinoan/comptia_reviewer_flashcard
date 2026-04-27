@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useExam } from "@/context/ExamContext";
 import { useSupabaseQuery } from "@/hooks/useSupabaseQuery";
-import { getAcronyms } from "@/services/acronymsService";
+import { getAcronymsWithConcepts } from "@/services/acronymsService";
 
 function groupData(items) {
   const result = {};
@@ -17,7 +17,7 @@ function groupData(items) {
 export function useAcronyms() {
   const { exam } = useExam();
   const { data, loading, error } = useSupabaseQuery(
-    () => getAcronyms(exam),
+    () => getAcronymsWithConcepts(exam),
     [exam]
   );
 
@@ -28,6 +28,7 @@ export function useAcronyms() {
   const [collapsed, setCollapsed]             = useState({});
   const [hideAllDefs, setHideAllDefs]         = useState(false);
   const [hiddenRows, setHiddenRows]           = useState({});
+  const [expandedRows, setExpandedRows]       = useState({});
   const [quizMode, setQuizMode]               = useState(false);
   const [quizAnswers, setQuizAnswers]         = useState({});
 
@@ -43,11 +44,26 @@ export function useAcronyms() {
     return activeAcronyms.filter((a) => {
       const matchesCategory =
         selectedCategory === "All" || a.category === selectedCategory;
-      const matchesSearch =
-        !q ||
-        a.acronym.toLowerCase().includes(q) ||
-        a.definition.toLowerCase().includes(q);
-      return matchesCategory && matchesSearch;
+      if (!q) return matchesCategory;
+      const haystack = [
+        a.acronym,
+        a.definition,
+        a.whatItDoes,
+        a.whyInvented,
+        a.problemSolved,
+        a.analogy,
+        a.examUseCase,
+        a.trigger,
+        a.answer,
+        a.examTrap,
+        ...(Array.isArray(a.compare)
+          ? a.compare.flatMap((c) => [c.term, c.fullName, c.keyIdea, c.useCases, c.analogy])
+          : []),
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+      return matchesCategory && haystack.includes(q);
     });
   }, [search, selectedCategory, activeAcronyms]);
 
@@ -75,6 +91,11 @@ export function useAcronyms() {
     setQuizMode((v) => !v);
     setQuizAnswers({});
   };
+
+  const toggleExpanded = (key) =>
+    setExpandedRows((prev) => ({ ...prev, [key]: !prev[key] }));
+
+  const isExpanded = (key) => !!expandedRows[key];
 
   const setQuizAnswer = (rowKey, value) =>
     setQuizAnswers((prev) => ({ ...prev, [rowKey]: value }));
@@ -112,5 +133,7 @@ export function useAcronyms() {
     isDefHidden,
     toggleHideAll,
     toggleQuizMode,
+    toggleExpanded,
+    isExpanded,
   };
 }
