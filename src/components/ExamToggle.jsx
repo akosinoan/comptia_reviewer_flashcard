@@ -38,6 +38,17 @@ export default function ExamToggle() {
         Network+
         <span className="ml-1.5 text-xs opacity-70">N10-009</span>
       </button>
+      <button
+        onClick={() => setExam("secplus")}
+        className={`px-4 py-1.5 rounded-md text-sm font-semibold transition-all ${
+          exam === "secplus"
+            ? "bg-primary text-primary-foreground shadow-sm"
+            : "text-muted-foreground hover:text-foreground"
+        }`}
+      >
+        Security+
+        <span className="ml-1.5 text-xs opacity-70">SY0-701</span>
+      </button>
     </div>
   );
 }
