@@ -6,12 +6,12 @@ import PageHeader from "@/components/shared/PageHeader";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import ScenarioRequirements from "@/components/pcbuilder/ScenarioRequirements";
 import ComponentCategory from "@/components/pcbuilder/ComponentCategory";
-import { useSupabaseQuery } from "@/hooks/useSupabaseQuery";
+import { useAsyncQuery } from "@/hooks/useAsyncQuery";
 import { getPCBuilderScenarios } from "@/services/pcBuilderService";
 
 export default function PCBuilderPage() {
   const { exam } = useExam();
-  const { data: activeScenarios, loading, error } = useSupabaseQuery(
+  const { data: activeScenarios, loading, error } = useAsyncQuery(
     () => getPCBuilderScenarios(exam),
     [exam]
   );

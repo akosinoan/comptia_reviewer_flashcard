@@ -7,13 +7,13 @@ import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import MatchPBQ from "@/components/pbq/MatchPBQ";
 import BucketPBQ from "@/components/pbq/BucketPBQ";
 import OrderPBQ from "@/components/pbq/OrderPBQ";
-import { useSupabaseQuery } from "@/hooks/useSupabaseQuery";
+import { useAsyncQuery } from "@/hooks/useAsyncQuery";
 import { getOSIExercises } from "@/services/pbqService";
 
 const TYPE_LABELS = { bucket: "Bucket", match: "Match", order: "Order" };
 
 export default function OSIPage() {
-  const { data: exercises, loading, error } = useSupabaseQuery(getOSIExercises, []);
+  const { data: exercises, loading, error } = useAsyncQuery(getOSIExercises, []);
 
   const [activeIdx, setActiveIdx]             = useState(0);
   const [showAnswer, setShowAnswer]           = useState(false);

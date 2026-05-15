@@ -1,13 +1,13 @@
 import { useState, useMemo, useEffect } from "react";
 import { useExam } from "@/context/ExamContext";
-import { useSupabaseQuery } from "@/hooks/useSupabaseQuery";
+import { useAsyncQuery } from "@/hooks/useAsyncQuery";
 import { getCommands } from "@/services/commandsService";
 
 export function useCommandFilter() {
   const { exam } = useExam();
   // Commands only exist for core2 and netplus; core1 falls back to core2
   const dbExam = exam === "netplus" ? "netplus" : "core2";
-  const { data, loading, error } = useSupabaseQuery(
+  const { data, loading, error } = useAsyncQuery(
     () => getCommands(dbExam),
     [dbExam]
   );

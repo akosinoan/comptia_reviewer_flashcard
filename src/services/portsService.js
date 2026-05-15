@@ -1,12 +1,6 @@
-import { supabase } from "./supabaseClient";
+import { sql } from "./neonClient";
 
 export async function getPorts(exam) {
-  const { data, error } = await supabase
-    .from("ports")
-    .select("*")
-    .eq("exam", exam)
-    .order("id");
-  if (error) throw error;
-  // Map full_name → fullName to match what components expect
-  return data.map((r) => ({ ...r, fullName: r.full_name }));
+  const rows = await sql`SELECT * FROM ports WHERE exam = ${exam} ORDER BY id`;
+  return rows.map((r) => ({ ...r, fullName: r.full_name }));
 }

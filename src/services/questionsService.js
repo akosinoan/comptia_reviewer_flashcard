@@ -1,11 +1,5 @@
-import { supabase } from "./supabaseClient";
+import { sql } from "./neonClient";
 
 export async function getQuestions(exam) {
-  const { data, error } = await supabase
-    .from("questions")
-    .select("*")
-    .eq("exam", exam)
-    .order("id");
-  if (error) throw error;
-  return data;
+  return await sql`SELECT * FROM questions WHERE exam = ${exam} ORDER BY id`;
 }

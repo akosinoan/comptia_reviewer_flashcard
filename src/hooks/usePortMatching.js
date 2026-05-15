@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { useExam } from "@/context/ExamContext";
-import { useSupabaseQuery } from "@/hooks/useSupabaseQuery";
+import { useAsyncQuery } from "@/hooks/useAsyncQuery";
 import { shuffle } from "@/utils/shuffle";
 import { getPorts } from "@/services/portsService";
 
 export function usePortMatching() {
   const { exam } = useExam();
-  const { data: activePorts, loading, error } = useSupabaseQuery(
+  const { data: activePorts, loading, error } = useAsyncQuery(
     () => getPorts(exam),
     [exam]
   );

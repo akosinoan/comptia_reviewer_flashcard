@@ -17,12 +17,12 @@ import RAIDDiagram from "@/components/raid/RAIDDiagram";
 import { getBayLabel, getBayAccent, getLabelColor, getIfaceStyle } from "@/components/raid/raidUtils";
 import { shuffle } from "@/utils/shuffle";
 import { RAID_OPTIONS } from "@/data/raidCore1";
-import { useSupabaseQuery } from "@/hooks/useSupabaseQuery";
+import { useAsyncQuery } from "@/hooks/useAsyncQuery";
 import { getRaidScenarios } from "@/services/raidService";
 
 export default function RAIDPage() {
   const { exam } = useExam();
-  const { data: scenarios, loading, error } = useSupabaseQuery(getRaidScenarios, []);
+  const { data: scenarios, loading, error } = useAsyncQuery(getRaidScenarios, []);
 
   const [order, setOrder]               = useState([]);
   const [scenarioIndex, setScenarioIndex] = useState(0);

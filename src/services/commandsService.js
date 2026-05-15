@@ -1,12 +1,5 @@
-import { supabase } from "./supabaseClient";
+import { sql } from "./neonClient";
 
 export async function getCommands(exam) {
-  const { data, error } = await supabase
-    .from("commands")
-    .select("*")
-    .eq("exam", exam)
-    .order("id");
-  if (error) throw error;
-  // JSONB windows/linux fields come back as plain objects — shape is unchanged
-  return data;
+  return await sql`SELECT * FROM commands WHERE exam = ${exam} ORDER BY id`;
 }

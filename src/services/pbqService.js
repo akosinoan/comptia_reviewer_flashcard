@@ -1,8 +1,6 @@
-import { supabase } from "./supabaseClient";
+import { sql } from "./neonClient";
 
 function rehydrate(row) {
-  // Spread JSONB payload to restore the flat shape components expect:
-  // bucket → { buckets, items }  |  match → { left, right }  |  order → { items }
   return {
     id: row.id,
     type: row.type,
@@ -15,13 +13,8 @@ function rehydrate(row) {
 }
 
 export async function getPBQs(exam) {
-  const { data, error } = await supabase
-    .from("pbq_exercises")
-    .select("*")
-    .eq("exam", exam)
-    .order("id");
-  if (error) throw error;
-  return data.map(rehydrate);
+  const rows = await sql`SELECT * FROM pbq_exercises WHERE exam = ${exam} ORDER BY id`;
+  return rows.map(rehydrate);
 }
 
 export async function getOSIExercises() {

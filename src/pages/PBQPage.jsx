@@ -10,12 +10,12 @@ import MatchPBQ from "@/components/pbq/MatchPBQ";
 import BucketPBQ from "@/components/pbq/BucketPBQ";
 import OrderPBQ from "@/components/pbq/OrderPBQ";
 import { shuffle } from "@/utils/shuffle";
-import { useSupabaseQuery } from "@/hooks/useSupabaseQuery";
+import { useAsyncQuery } from "@/hooks/useAsyncQuery";
 import { getPBQs } from "@/services/pbqService";
 
 export default function PBQPage() {
   const { exam } = useExam();
-  const { data: activePBQs, loading, error } = useSupabaseQuery(
+  const { data: activePBQs, loading, error } = useAsyncQuery(
     () => getPBQs(exam),
     [exam]
   );

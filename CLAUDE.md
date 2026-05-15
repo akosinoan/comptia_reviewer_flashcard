@@ -10,7 +10,7 @@ pnpm build        # Build production bundle to /dist
 pnpm lint         # Run ESLint
 pnpm preview      # Preview production build locally
 
-# One-time / re-seed (requires SUPABASE_URL + SUPABASE_SERVICE_KEY in .env.local)
+# One-time / re-seed (requires DATABASE_URL_ADMIN in .env.local)
 node --env-file=.env.local scripts/seed.mjs
 ```
 
@@ -20,13 +20,13 @@ React + Vite SPA for CompTIA exam study. Three exam modes — **Core 1** (`core1
 
 **Routing** is handled by React Router in `App.jsx`. Each route maps to a page in `src/pages/`.
 
-**Data source.** All study content (questions, acronyms, ports, commands, PBQs, RAID/PC-builder scenarios) lives in **Supabase** and is fetched on demand. Static files in `src/data/` are limited to a couple of legacy datasets (`raidCore1.js`, `subnetData.js`) — most reads happen via service modules in `src/services/` (e.g., `acronymsService.js`) which call the Supabase JS client (`src/services/supabaseClient.js`). The browser uses the publishable anon key from `.env.local`; server-side seed scripts use the `service_role` key.
+**Data source.** All study content (questions, acronyms, ports, commands, PBQs, RAID/PC-builder scenarios) lives in **Neon Postgres** and is fetched on demand. Static files in `src/data/` are limited to a couple of legacy datasets (`raidCore1.js`, `subnetData.js`, `acronymsSecPlus.js`) — most reads happen via service modules in `src/services/` (e.g., `acronymsService.js`) which use the `@neondatabase/serverless` HTTP driver via `src/services/neonClient.js`. The browser uses `VITE_DATABASE_URL` (a read-only `web_anon` Postgres role with `SELECT`-only privileges); the seed script uses `DATABASE_URL_ADMIN` (the schema owner). Both come from `.env.local`.
 
 **Styling** uses Tailwind CSS with HSL CSS variables for theme switching (light/dark via class on `<html>`). Theme preference is persisted to `localStorage`. Radix UI primitives are used for Dialog and Progress. The card flip animation is a CSS 3D transform defined in `index.css`.
 
 **Build config:** `vite.config.js` sets `base: "/comptia_reviewer_flashcard/"` for GitHub Pages deployment and aliases `@` → `./src`.
 
-## Supabase schema
+## Database schema (Neon)
 
 All content tables include an `exam` column (`'core1' | 'core2' | 'netplus'`) so a single table covers all three exams. Service modules filter by `exam` per request.
 
@@ -178,4 +178,4 @@ All content tables include an `exam` column (`'core1' | 'core2' | 'netplus'`) so
 
 ## Re-seeding from this repo
 
-`scripts/seed.mjs` re-creates the bare `acronyms`, `questions`, `ports`, `commands`, `pbq_exercises`, `raid_scenarios`, and `pc_builder_scenarios` rows from static JS files (`src/data/acronymsCore1.js`, etc.) — but **not** the rich `acronyms.what_it_does` / `acronym_traps` / `acronym_rules` content, which currently lives only in Supabase. `scripts/schema_rich.sql` contains the DDL for the rich columns and trap/rule tables; run it once on a fresh project before seeding.
+`scripts/seed.mjs` re-creates the bare `acronyms`, `questions`, `ports`, `commands`, `pbq_exercises`, `raid_scenarios`, and `pc_builder_scenarios` rows from static JS files (`src/data/acronymsCore1.js`, etc.) using `pg` with `INSERT … ON CONFLICT DO UPDATE` — but **not** the rich `acronyms.what_it_does` / `acronym_traps` / `acronym_rules` content, which lives only in the database. `scripts/schema_rich.sql` contains the DDL for the rich columns and trap/rule tables; run it once on a fresh Neon project before seeding. The read-only `web_anon` role inherits `SELECT` on any new tables via `ALTER DEFAULT PRIVILEGES`.

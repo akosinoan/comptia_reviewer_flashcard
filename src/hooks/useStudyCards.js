@@ -1,11 +1,11 @@
 import { useState, useCallback, useEffect } from "react";
 import { useExam } from "@/context/ExamContext";
-import { useSupabaseQuery } from "@/hooks/useSupabaseQuery";
+import { useAsyncQuery } from "@/hooks/useAsyncQuery";
 import { getQuestions } from "@/services/questionsService";
 
 export function useStudyCards() {
   const { exam } = useExam();
-  const { data: activeQuestions, loading, error } = useSupabaseQuery(
+  const { data: activeQuestions, loading, error } = useAsyncQuery(
     () => getQuestions(exam),
     [exam]
   );

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-export function useSupabaseQuery(fetchFn, deps = []) {
+export function useAsyncQuery(fetchFn, deps = []) {
   const [data, setData]       = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState(null);

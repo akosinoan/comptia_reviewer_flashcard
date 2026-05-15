@@ -1,6 +1,8 @@
 -- Migration: rich acronym fields + sibling tables for confusion traps and
--- decision rules. Run this once in Supabase Studio (SQL editor) before
--- executing scripts/migrateRich.mjs.
+-- decision rules. Run once on Neon (or any vanilla Postgres) before
+-- executing scripts/seed.mjs. The read-only `web_anon` role inherits SELECT
+-- on these tables via the default-privileges grant set up at role creation,
+-- so no per-table RLS is needed.
 --
 -- Idempotent: safe to re-run.
 
@@ -36,23 +38,3 @@ CREATE TABLE IF NOT EXISTS acronym_rules (
   sort_order   INT NOT NULL DEFAULT 0,
   CONSTRAINT acronym_rules_exam_subcat_trigger_key UNIQUE (exam, subcategory, trigger)
 );
-
--- Read access for the publishable (anon) role -------------------------------
-ALTER TABLE acronym_traps ENABLE ROW LEVEL SECURITY;
-ALTER TABLE acronym_rules ENABLE ROW LEVEL SECURITY;
-
-DO $$
-BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_policies
-    WHERE schemaname = 'public' AND tablename = 'acronym_traps' AND policyname = 'public_read'
-  ) THEN
-    CREATE POLICY public_read ON acronym_traps FOR SELECT USING (true);
-  END IF;
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_policies
-    WHERE schemaname = 'public' AND tablename = 'acronym_rules' AND policyname = 'public_read'
-  ) THEN
-    CREATE POLICY public_read ON acronym_rules FOR SELECT USING (true);
-  END IF;
-END $$;

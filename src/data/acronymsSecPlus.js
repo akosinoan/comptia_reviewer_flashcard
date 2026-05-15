@@ -2,7 +2,7 @@
 // subcategories, and rich-detail fields on the highest-leverage terms.
 //
 // Loaded directly by acronymsService.getAcronymsWithConcepts() when
-// exam === "secplus" (Supabase is bypassed for this exam).
+// exam === "secplus" (the database is bypassed for this exam).
 
 export const ACRONYMS_SECPLUS = [
   // ─── Cryptography → Symmetric Algorithms ─────────────────────────────────

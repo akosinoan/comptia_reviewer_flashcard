@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { useExam } from "@/context/ExamContext";
-import { useSupabaseQuery } from "@/hooks/useSupabaseQuery";
+import { useAsyncQuery } from "@/hooks/useAsyncQuery";
 import { getAcronymsWithConcepts } from "@/services/acronymsService";
 
 function groupData(items) {
@@ -16,7 +16,7 @@ function groupData(items) {
 
 export function useAcronyms() {
   const { exam } = useExam();
-  const { data, loading, error } = useSupabaseQuery(
+  const { data, loading, error } = useAsyncQuery(
     () => getAcronymsWithConcepts(exam),
     [exam]
   );

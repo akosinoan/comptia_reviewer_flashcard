@@ -1,14 +1,8 @@
-import { supabase } from "./supabaseClient";
+import { sql } from "./neonClient";
 import { ACRONYMS_SECPLUS } from "@/data/acronymsSecPlus.js";
 
 export async function getAcronyms(exam) {
-  const { data, error } = await supabase
-    .from("acronyms")
-    .select("*")
-    .eq("exam", exam)
-    .order("id");
-  if (error) throw error;
-  return data;
+  return await sql`SELECT * FROM acronyms WHERE exam = ${exam} ORDER BY id`;
 }
 
 const toAcronym = (row) => ({
@@ -48,18 +42,15 @@ const toRule = (row) => ({
 export async function getAcronymsWithConcepts(exam) {
   if (exam === "secplus") return ACRONYMS_SECPLUS;
 
-  const [acronymsRes, trapsRes, rulesRes] = await Promise.all([
-    supabase.from("acronyms").select("*").eq("exam", exam).order("id"),
-    supabase.from("acronym_traps").select("*").eq("exam", exam).order("sort_order"),
-    supabase.from("acronym_rules").select("*").eq("exam", exam).order("sort_order"),
+  const [acronyms, traps, rules] = await Promise.all([
+    sql`SELECT * FROM acronyms       WHERE exam = ${exam} ORDER BY id`,
+    sql`SELECT * FROM acronym_traps  WHERE exam = ${exam} ORDER BY sort_order`,
+    sql`SELECT * FROM acronym_rules  WHERE exam = ${exam} ORDER BY sort_order`,
   ]);
-  if (acronymsRes.error) throw acronymsRes.error;
-  if (trapsRes.error) throw trapsRes.error;
-  if (rulesRes.error) throw rulesRes.error;
 
   return [
-    ...acronymsRes.data.map(toAcronym),
-    ...trapsRes.data.map(toTrap),
-    ...rulesRes.data.map(toRule),
+    ...acronyms.map(toAcronym),
+    ...traps.map(toTrap),
+    ...rules.map(toRule),
   ];
 }
