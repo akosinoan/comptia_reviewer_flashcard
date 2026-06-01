@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#020817"/>
+      <stop offset="0.6" stop-color="#0b1220"/>
+      <stop offset="1" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#60a5fa"/>
+      <stop offset="1" stop-color="#3b82f6"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.85" cy="0.15" r="0.7">
+      <stop offset="0" stop-color="#3b82f6" stop-opacity="0.40"/>
+      <stop offset="1" stop-color="#3b82f6" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="0.1" cy="0.95" r="0.6">
+      <stop offset="0" stop-color="#1d4ed8" stop-opacity="0.30"/>
+      <stop offset="1" stop-color="#1d4ed8" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="logoClip">
+      <rect x="96" y="70" width="96" height="96" rx="20"/>
+    </clipPath>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <rect width="1200" height="630" fill="url(#glow2)"/>
+
+  <!-- noanworks favicon logo -->
+  <g clip-path="url(#logoClip)">
+    <svg x="96" y="70" width="96" height="96" viewBox="0 0 1500 1500" preserveAspectRatio="xMidYMid meet">
+      <rect width="1500" height="1500" x="0" y="0" fill="#450a0a"/>
+      <svg width="1000" height="1000" viewBox="0 0 571 571" x="250" y="250">
+        <rect width="448.28" height="448.28" x="-224.14" y="-224.14" fill="none" stroke="#fff" stroke-width="22.5" paint-order="stroke" rx="0" ry="0" transform="translate(285.5 285.5)scale(1.1895)"/>
+        <path fill="#fff" stroke="#fff" stroke-width="7.32" d="M230.36 391.05h-46.03v-235.2h46.37l116.59 151.87V155.85h46.03v235.2h-43.01L230.36 234.14z" paint-order="stroke"/>
+      </svg>
+    </svg>
+  </g>
+
+  <text x="216" y="135" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="34" font-weight="700" letter-spacing="6" fill="#93c5fd">FLASHCARD REVIEWER</text>
+
+  <text x="96" y="330" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="96" font-weight="800" fill="#f8fafc">CompTIA Exam Prep</text>
+
+  <text x="96" y="410" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="40" font-weight="500" fill="#94a3b8">Free flashcards, PBQs &amp; acronym drills</text>
+
+  <!-- exam pills -->
+  <g font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="32" font-weight="700">
+    <rect x="96" y="470" width="240" height="76" rx="38" fill="#3b82f6"/>
+    <text x="216" y="519" fill="#0f172a" text-anchor="middle">A+ Core 1</text>
+
+    <rect x="356" y="470" width="240" height="76" rx="38" fill="#1e293b" stroke="#334155" stroke-width="2"/>
+    <text x="476" y="519" fill="#e2e8f0" text-anchor="middle">A+ Core 2</text>
+
+    <rect x="616" y="470" width="210" height="76" rx="38" fill="#1e293b" stroke="#334155" stroke-width="2"/>
+    <text x="721" y="519" fill="#e2e8f0" text-anchor="middle">Network+</text>
+  </g>
+
+  <rect x="0" y="618" width="1200" height="12" fill="url(#accent)"/>
+</svg>

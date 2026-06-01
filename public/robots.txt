@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://akosinoan.github.io/comptia_reviewer_flashcard/sitemap.xml

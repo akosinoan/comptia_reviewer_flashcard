@@ -42,6 +42,7 @@ export default function AcronymsPage() {
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <PageHeader
         title="Acronym List"
+        showSecPlus
         subtitle={
           exam === "core2"
             ? `CompTIA A+ Core 2 (220-1202) — ${activeAcronyms.length} acronyms`
